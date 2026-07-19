@@ -1,0 +1,8 @@
+# Prettier が無視するファイル
+node_modules
+.pnpm-store
+.next
+out
+dist
+coverage
+pnpm-lock.yaml
