@@ -44,3 +44,7 @@ next-env.d.ts
 # package manager
 package-lock.json
 yarn.lock
+
+# GitHub draft bodies (PR/Issue 本文の作業用)
+.github/DRAFTS/*.md
+.github/DRAFTS/**/*.md
