@@ -21,10 +21,10 @@ post-merge:
   commands:
     install:
       glob: "{package.json,pnpm-lock.yaml}"
-      run: pnpm install
+      run: pnpm install --frozen-lockfile
 
 post-checkout:
   commands:
     install:
       glob: "{package.json,pnpm-lock.yaml}"
-      run: pnpm install
+      run: pnpm install --frozen-lockfile

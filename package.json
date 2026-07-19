@@ -11,7 +11,8 @@
     "lint": "eslint",
     "type-check": "tsc --noEmit",
     "format": "prettier --write .",
-    "format:check": "prettier --check ."
+    "format:check": "prettier --check .",
+    "prepare": "lefthook install"
   },
   "dependencies": {
     "class-variance-authority": "^0.7.1",
