@@ -48,3 +48,6 @@ yarn.lock
 # GitHub draft bodies (PR/Issue 本文の作業用)
 .github/DRAFTS/*.md
 .github/DRAFTS/**/*.md
+
+# next dev --experimental-https が生成する証明書
+/certificates
