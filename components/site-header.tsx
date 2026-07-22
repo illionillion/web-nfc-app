@@ -6,7 +6,9 @@ import { clsx } from "clsx";
  */
 export function SiteHeader() {
   return (
-    <header className={clsx(["border-b", "border-zinc-200", "bg-white"])}>
+    <header
+      className={clsx(["sticky", "top-0", "z-50", "border-b", "border-zinc-200", "bg-white"])}
+    >
       <div
         className={clsx([
           "mx-auto",
