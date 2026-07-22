@@ -29,8 +29,12 @@ function getLanDevHosts(): string[] {
 }
 
 const nextConfig: NextConfig = {
-  // スマホ実機確認（https://192.168.x.x:3000）で HMR / バンドルがブロックされないようにする
-  allowedDevOrigins: getLanDevHosts(),
+  // 開発時のみ。本番ビルドで LAN IP を許可リストに載せない
+  ...(process.env.NODE_ENV === "development"
+    ? {
+        allowedDevOrigins: getLanDevHosts(),
+      }
+    : {}),
   turbopack: {
     root: projectRoot,
   },
