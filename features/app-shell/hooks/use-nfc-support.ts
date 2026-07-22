@@ -2,7 +2,11 @@
 
 import { useSyncExternalStore } from "react";
 
-import { getNfcSupportStatus, type NfcSupportStatus } from "@/lib/nfc/support";
+import {
+  getNfcSupportStatus,
+  NFC_SUPPORT_CHECKING,
+  type NfcSupportStatus,
+} from "@/lib/nfc/support";
 
 /**
  * クライアント側の Web NFC 対応状況を購読する。
@@ -23,8 +27,8 @@ function subscribeNoop(): () => void {
 }
 
 /**
- * SSR / ハイドレーション前のスナップショット。
+ * SSR / ハイドレーション前のスナップショット（定数参照）。
  */
 function getServerSnapshot(): NfcSupportStatus {
-  return { kind: "checking" };
+  return NFC_SUPPORT_CHECKING;
 }
