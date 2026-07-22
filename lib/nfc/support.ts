@@ -40,7 +40,7 @@ export function isNdefReaderAvailable(): boolean {
  * @returns Secure Context なら `true`
  */
 export function isSecureContextAvailable(): boolean {
-  return typeof window !== "undefined" && window.isSecureContext;
+  return typeof window !== "undefined" && window.isSecureContext === true;
 }
 
 /**
