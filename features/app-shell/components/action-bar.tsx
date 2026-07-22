@@ -46,9 +46,6 @@ function ActionButton({ children, disabled }: ActionButtonProps) {
         "text-white",
         "disabled:cursor-not-allowed",
         "disabled:opacity-40",
-        "dark:border-zinc-600",
-        "dark:bg-zinc-100",
-        "dark:text-zinc-900",
       ])}
     >
       {children}

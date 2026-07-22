@@ -35,7 +35,7 @@ export default function Home() {
         <h1 className={clsx(["text-3xl", "font-semibold", "tracking-tight"])}>
           ブラウザだけで NFC を読み書き
         </h1>
-        <p className={clsx(["text-base", "leading-7", "text-zinc-600", "dark:text-zinc-400"])}>
+        <p className={clsx(["text-base", "leading-7", "text-zinc-600"])}>
           NDEF タグの読取・書込・消去を端末内で完結するツールです。Android Chrome と HTTPS（または
           localhost）が必要です。
         </p>
@@ -55,8 +55,6 @@ export default function Home() {
             "text-sm",
             "font-medium",
             "text-white",
-            "dark:bg-zinc-100",
-            "dark:text-zinc-900",
           ])}
         >
           ツールを開く

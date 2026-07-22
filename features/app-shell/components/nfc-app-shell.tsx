@@ -42,7 +42,7 @@ export function NfcAppShell() {
             Web NFC
           </p>
           <h1 className={clsx(["text-2xl", "font-semibold", "tracking-tight"])}>読み書きツール</h1>
-          <p className={clsx(["text-sm", "text-zinc-600", "dark:text-zinc-400"])}>
+          <p className={clsx(["text-sm", "text-zinc-600"])}>
             ブラウザだけで NDEF タグを読み書きします。モード切替ではなく、操作ボタンで進めます。
           </p>
         </div>
@@ -88,7 +88,6 @@ function PlaceholderBox({ children }: PlaceholderBoxProps) {
         "text-center",
         "text-sm",
         "text-zinc-500",
-        "dark:border-zinc-700",
       ])}
     >
       {children}
