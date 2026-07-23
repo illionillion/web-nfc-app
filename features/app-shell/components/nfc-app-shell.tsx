@@ -6,14 +6,18 @@ import { ActionBar } from "@/features/app-shell/components/action-bar";
 import { NfcSupportBanner } from "@/features/app-shell/components/nfc-support-banner";
 import { ShellSection } from "@/features/app-shell/components/shell-section";
 import { useNfcSupport } from "@/features/app-shell/hooks/use-nfc-support";
+import { ReadResultPanel } from "@/features/nfc-read/components/read-result-panel";
+import { useNfcScan } from "@/features/nfc-read/hooks/use-nfc-scan";
 
 /**
  * Web NFC ツール本体のシェル。
- * 対応判定と縦並びセクション骨格を担当し、読取・書込の本実装は後続 Issue に委ねる。
+ * 対応判定と読取を担当し、書込・履歴の本実装は後続 Issue に委ねる。
  */
 export function NfcAppShell() {
   const support = useNfcSupport();
-  const actionsDisabled = support.kind !== "supported";
+  const { phase, result, errorMessage, startScan, cancelScan } = useNfcScan();
+  const unsupported = support.kind !== "supported";
+  const isScanning = phase === "scanning";
 
   return (
     <div
@@ -47,11 +51,16 @@ export function NfcAppShell() {
           </p>
         </div>
         <NfcSupportBanner status={support} />
-        <ActionBar disabled={actionsDisabled} />
+        <ActionBar
+          disabled={unsupported}
+          isScanning={isScanning}
+          onScan={unsupported ? undefined : () => void startScan()}
+          onCancelScan={cancelScan}
+        />
       </header>
 
       <ShellSection title="いまの結果" description="スキャンしたタグの内容がここに表示されます。">
-        <PlaceholderBox>まだ読み取っていません</PlaceholderBox>
+        <ReadResultPanel phase={phase} result={result} errorMessage={errorMessage} />
       </ShellSection>
 
       <ShellSection

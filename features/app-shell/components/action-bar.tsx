@@ -1,20 +1,34 @@
 import { clsx } from "clsx";
 
 type ActionBarProps = {
-  /** 操作ボタンを無効化するか（非対応時など） */
+  /** 書込・消去を無効化するか（非対応時など） */
   disabled: boolean;
+  /** スキャン中か */
+  isScanning?: boolean;
+  /** スキャン開始 */
+  onScan?: () => void;
+  /** スキャンキャンセル */
+  onCancelScan?: () => void;
 };
 
 /**
- * スキャン / 書き込み / 消去の操作ボタン枠。
- * 本実装は別 Issue のため、現状は押下しても何もしない。
+ * スキャン / 書き込み / 消去の操作ボタン。
+ * 書込・消去の本実装は後続 Issue。
  */
-export function ActionBar({ disabled }: ActionBarProps) {
+export function ActionBar({ disabled, isScanning = false, onScan, onCancelScan }: ActionBarProps) {
   return (
     <div className={clsx(["flex", "flex-wrap", "gap-2"])} role="group" aria-label="NFC 操作">
-      <ActionButton disabled={disabled}>スキャン</ActionButton>
-      <ActionButton disabled={disabled}>書き込む</ActionButton>
-      <ActionButton disabled={disabled}>消去</ActionButton>
+      {isScanning ? (
+        <ActionButton disabled={false} onClick={onCancelScan}>
+          キャンセル
+        </ActionButton>
+      ) : (
+        <ActionButton disabled={disabled || !onScan} onClick={onScan}>
+          スキャン
+        </ActionButton>
+      )}
+      <ActionButton disabled>書き込む</ActionButton>
+      <ActionButton disabled>消去</ActionButton>
     </div>
   );
 }
@@ -22,16 +36,18 @@ export function ActionBar({ disabled }: ActionBarProps) {
 type ActionButtonProps = {
   children: string;
   disabled: boolean;
+  onClick?: () => void;
 };
 
 /**
- * シェル用の操作ボタン。後続 Issue でハンドラを接続する。
+ * シェル用の操作ボタン。
  */
-function ActionButton({ children, disabled }: ActionButtonProps) {
+function ActionButton({ children, disabled, onClick }: ActionButtonProps) {
   return (
     <button
       type="button"
       disabled={disabled}
+      onClick={onClick}
       className={clsx([
         "min-h-11",
         "flex-1",
