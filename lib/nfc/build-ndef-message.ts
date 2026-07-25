@@ -24,7 +24,7 @@ export function validateWriteDraftRecord(record: WriteDraftRecord): DraftValidat
     };
   }
 
-  if (record.kind === "url" && !isAbsoluteUrl(value)) {
+  if (record.kind === "url" && !isHttpUrl(value)) {
     return {
       recordId: record.id,
       kind: record.kind,
@@ -137,14 +137,16 @@ export function getWriteRecordKindLabel(kind: WriteRecordKind): string {
 }
 
 /**
- * 絶対 URL かどうかを判定する。
+ * http(s) の絶対 URL かどうかを判定する。
+ * javascript: / data: など他スキームは不可。
  *
  * @param value - 入力文字列
- * @returns 絶対 URL なら true
+ * @returns http または https の絶対 URL なら true
  */
-function isAbsoluteUrl(value: string): boolean {
+function isHttpUrl(value: string): boolean {
   try {
-    return Boolean(new URL(value));
+    const url = new URL(value);
+    return url.protocol === "http:" || url.protocol === "https:";
   } catch {
     return false;
   }

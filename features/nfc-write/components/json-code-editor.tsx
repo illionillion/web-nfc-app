@@ -32,6 +32,7 @@ export function JsonCodeEditor({ id, value, onChange, invalid = false }: JsonCod
         onChange={(event) => onChange(event.target.value)}
         padding={12}
         data-color-mode="light"
+        aria-invalid={invalid}
         style={{
           fontSize: 13,
           fontFamily: "ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace",
