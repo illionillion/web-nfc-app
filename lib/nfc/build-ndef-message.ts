@@ -105,10 +105,11 @@ function toNdefRecordInit(record: WriteDraftRecord): NDEFRecordInit {
         data: value,
       };
     case "json":
+      // mime レコードの data は文字列不可。BufferSource が必須（Chrome Web NFC）
       return {
         recordType: "mime",
         mediaType: "application/json",
-        data: JSON.stringify(JSON.parse(value)),
+        data: new TextEncoder().encode(JSON.stringify(JSON.parse(value))),
       };
   }
 }
