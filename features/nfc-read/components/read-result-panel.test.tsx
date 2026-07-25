@@ -1,6 +1,6 @@
 import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { beforeEach, describe, expect, it, vi } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 import { ReadResultPanel } from "@/features/nfc-read/components/read-result-panel";
 import type { NfcReadResult } from "@/features/nfc-read/types";
@@ -17,9 +17,39 @@ const sampleResult: NfcReadResult = {
   ],
 };
 
+const originalClipboardDescriptor = Object.getOwnPropertyDescriptor(navigator, "clipboard");
+
+/**
+ * navigator.clipboard を一時的に差し替える。
+ *
+ * @param clipboard - モック実装
+ */
+function stubClipboard(clipboard: { writeText: ReturnType<typeof vi.fn> }) {
+  Object.defineProperty(navigator, "clipboard", {
+    configurable: true,
+    value: clipboard,
+  });
+}
+
+/**
+ * navigator.clipboard をテスト前の状態へ戻す。
+ */
+function restoreClipboard() {
+  if (originalClipboardDescriptor) {
+    Object.defineProperty(navigator, "clipboard", originalClipboardDescriptor);
+    return;
+  }
+
+  Reflect.deleteProperty(navigator, "clipboard");
+}
+
 describe("ReadResultPanel", () => {
   beforeEach(() => {
     vi.clearAllMocks();
+  });
+
+  afterEach(() => {
+    restoreClipboard();
   });
 
   it("スキャン中の案内を表示する", () => {
@@ -35,10 +65,7 @@ describe("ReadResultPanel", () => {
   it("結果を表示し、全体コピーできる", async () => {
     const user = userEvent.setup();
     const writeText = vi.fn().mockResolvedValue(undefined);
-    Object.defineProperty(navigator, "clipboard", {
-      configurable: true,
-      value: { writeText },
-    });
+    stubClipboard({ writeText });
 
     render(<ReadResultPanel phase="success" result={sampleResult} errorMessage={null} />);
 
@@ -54,11 +81,8 @@ describe("ReadResultPanel", () => {
 
   it("全体コピー失敗時に失敗表示する", async () => {
     const user = userEvent.setup();
-    Object.defineProperty(navigator, "clipboard", {
-      configurable: true,
-      value: {
-        writeText: vi.fn().mockRejectedValue(new Error("denied")),
-      },
+    stubClipboard({
+      writeText: vi.fn().mockRejectedValue(new Error("denied")),
     });
 
     render(<ReadResultPanel phase="success" result={sampleResult} errorMessage={null} />);
@@ -71,10 +95,7 @@ describe("ReadResultPanel", () => {
   it("レコード単位でもコピーできる", async () => {
     const user = userEvent.setup();
     const writeText = vi.fn().mockResolvedValue(undefined);
-    Object.defineProperty(navigator, "clipboard", {
-      configurable: true,
-      value: { writeText },
-    });
+    stubClipboard({ writeText });
 
     render(<ReadResultPanel phase="success" result={sampleResult} errorMessage={null} />);
 
