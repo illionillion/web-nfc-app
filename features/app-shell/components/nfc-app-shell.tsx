@@ -60,7 +60,12 @@ export function NfcAppShell() {
       </header>
 
       <ShellSection title="いまの結果" description="スキャンしたタグの内容がここに表示されます。">
-        <ReadResultPanel phase={phase} result={result} errorMessage={errorMessage} />
+        <ReadResultPanel
+          key={phase === "success" && result ? result.readAt : phase}
+          phase={phase}
+          result={result}
+          errorMessage={errorMessage}
+        />
       </ShellSection>
 
       <ShellSection

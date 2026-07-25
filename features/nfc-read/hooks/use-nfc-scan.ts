@@ -56,12 +56,21 @@ export function useNfcScan(): UseNfcScanResult {
       const reader = new NDEFReader();
 
       reader.addEventListener("readingerror", () => {
+        if (controller.signal.aborted || completedRef.current) {
+          return;
+        }
+
+        completedRef.current = true;
         setPhase("error");
         setErrorMessage("読み取りに失敗しました。タグを近づけてもう一度試してください。");
         cancelScan();
       });
 
       reader.addEventListener("reading", (event) => {
+        if (controller.signal.aborted || completedRef.current) {
+          return;
+        }
+
         const readingEvent = event as NDEFReadingEvent;
         const nextResult: NfcReadResult = {
           serialNumber: readingEvent.serialNumber || "",
