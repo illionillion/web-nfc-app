@@ -7,6 +7,7 @@ import { JsonCodeEditor } from "@/features/nfc-write/components/json-code-editor
 import { createKindValueCache } from "@/features/nfc-write/lib/draft-defaults";
 import type { WriteDraftRecord, WriteRecordKind } from "@/features/nfc-write/types";
 import { getWriteRecordKindLabel, validateWriteDraftRecord } from "@/lib/nfc/build-ndef-message";
+import { validateJsonText } from "@/lib/nfc/validate-json";
 
 type RecordEditModalProps = {
   record: WriteDraftRecord;
@@ -26,6 +27,8 @@ export function RecordEditModal({ record, onClose, onSave }: RecordEditModalProp
   const [valuesByKind, setValuesByKind] = useState(() => createKindValueCache(record));
   const [error, setError] = useState<string | null>(null);
   const value = valuesByKind[kind];
+  const liveJsonError = kind === "json" ? validateJsonText(value) : null;
+  const displayError = error ?? liveJsonError;
 
   useEffect(() => {
     const dialog = dialogRef.current;
@@ -173,15 +176,15 @@ export function RecordEditModal({ record, onClose, onSave }: RecordEditModalProp
             <JsonCodeEditor
               id={inputId}
               value={value}
-              invalid={Boolean(error)}
+              invalid={Boolean(displayError)}
               onChange={updateCurrentValue}
             />
           ) : null}
         </div>
 
-        {error ? (
+        {displayError ? (
           <p className={clsx(["text-sm", "text-red-700"])} role="alert">
-            {error}
+            {displayError}
           </p>
         ) : null}
 
@@ -204,6 +207,7 @@ export function RecordEditModal({ record, onClose, onSave }: RecordEditModalProp
           </button>
           <button
             type="submit"
+            disabled={Boolean(liveJsonError)}
             className={clsx([
               "min-h-11",
               "rounded-md",
@@ -214,6 +218,8 @@ export function RecordEditModal({ record, onClose, onSave }: RecordEditModalProp
               "text-sm",
               "font-medium",
               "text-white",
+              "disabled:cursor-not-allowed",
+              "disabled:opacity-40",
             ])}
           >
             保存

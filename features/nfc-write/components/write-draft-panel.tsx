@@ -5,7 +5,11 @@ import { useState } from "react";
 
 import { RecordEditModal } from "@/features/nfc-write/components/record-edit-modal";
 import type { NfcWritePhase, WriteDraftRecord, WriteRecordKind } from "@/features/nfc-write/types";
-import { getWriteRecordKindLabel, validateWriteDraftRecord } from "@/lib/nfc/build-ndef-message";
+import {
+  getWriteRecordKindLabel,
+  validateWriteDraft,
+  validateWriteDraftRecord,
+} from "@/lib/nfc/build-ndef-message";
 
 type WriteDraftPanelProps = {
   records: WriteDraftRecord[];
@@ -28,10 +32,20 @@ export function WriteDraftPanel({
   onRemove,
 }: WriteDraftPanelProps) {
   const [editing, setEditing] = useState<WriteDraftRecord | null>(null);
+  const draftIssue = validateWriteDraft(records);
 
   return (
     <div className={clsx(["space-y-4"])}>
-      <WriteStatus phase={writePhase} errorMessage={writeErrorMessage} />
+      <WriteStatus
+        phase={writePhase}
+        errorMessage={writeErrorMessage}
+        draftIssueMessage={
+          records.length > 0 &&
+          (writePhase === "idle" || writePhase === "success" || writePhase === "cancelled")
+            ? (draftIssue?.message ?? null)
+            : null
+        }
+      />
 
       <div className={clsx(["flex", "flex-wrap", "gap-2"])}>
         {(["text", "url", "json"] as const).map((kind) => (
@@ -173,12 +187,13 @@ export function WriteDraftPanel({
 type WriteStatusProps = {
   phase: NfcWritePhase;
   errorMessage: string | null;
+  draftIssueMessage: string | null;
 };
 
 /**
  * 書込状態の表示。
  */
-function WriteStatus({ phase, errorMessage }: WriteStatusProps) {
+function WriteStatus({ phase, errorMessage, draftIssueMessage }: WriteStatusProps) {
   if (phase === "writing") {
     return (
       <p className={clsx(["text-sm", "text-zinc-600"])}>書き込み中です。タグをかざしてください。</p>
@@ -197,6 +212,14 @@ function WriteStatus({ phase, errorMessage }: WriteStatusProps) {
     return (
       <p className={clsx(["text-sm", "text-red-700"])} role="alert">
         {errorMessage ?? "書き込みに失敗しました。"}
+      </p>
+    );
+  }
+
+  if (draftIssueMessage) {
+    return (
+      <p className={clsx(["text-sm", "text-amber-700"])} role="status">
+        書き込みできません: {draftIssueMessage}
       </p>
     );
   }

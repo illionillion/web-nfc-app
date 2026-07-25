@@ -1,4 +1,5 @@
 import type { WriteDraftRecord, WriteRecordKind } from "@/features/nfc-write/types";
+import { validateJsonText } from "@/lib/nfc/validate-json";
 
 export type DraftValidationIssue = {
   recordId: string;
@@ -32,13 +33,12 @@ export function validateWriteDraftRecord(record: WriteDraftRecord): DraftValidat
   }
 
   if (record.kind === "json") {
-    try {
-      JSON.parse(value);
-    } catch {
+    const jsonError = validateJsonText(value);
+    if (jsonError) {
       return {
         recordId: record.id,
         kind: record.kind,
-        message: "JSON として解釈できません。",
+        message: jsonError,
       };
     }
   }
@@ -73,12 +73,17 @@ export function validateWriteDraft(records: WriteDraftRecord[]): DraftValidation
 
 /**
  * 下書きを NDEFMessageInit へ変換する。
- * 呼び出し前に validateWriteDraft で検証済みであること。
+ * 不正な下書きは例外を投げる（書込直前の最終防御）。
  *
  * @param records - 下書きレコード一覧
  * @returns Web NFC へ渡すメッセージ
  */
 export function buildNdefMessageInit(records: WriteDraftRecord[]): NDEFMessageInit {
+  const issue = validateWriteDraft(records);
+  if (issue) {
+    throw new Error(issue.message);
+  }
+
   return {
     records: records.map(toNdefRecordInit),
   };
