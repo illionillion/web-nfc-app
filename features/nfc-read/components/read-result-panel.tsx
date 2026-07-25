@@ -1,6 +1,7 @@
 "use client";
 
 import { clsx } from "clsx";
+import { ClipboardCopy } from "lucide-react";
 import { useState } from "react";
 
 import type { NfcScanPhase } from "@/features/nfc-read/hooks/use-nfc-scan";
@@ -118,6 +119,9 @@ type RecordCardProps = {
  * 1レコード分の表示カード。
  */
 function RecordCard({ record, index }: RecordCardProps) {
+  const [copyState, setCopyState] = useState<"idle" | "copied" | "failed">("idle");
+  const payload = record.text || "";
+
   return (
     <article
       className={clsx([
@@ -137,19 +141,62 @@ function RecordCard({ record, index }: RecordCardProps) {
           <p className={clsx(["text-xs", "text-zinc-500"])}>{record.mediaType}</p>
         ) : null}
       </header>
-      <pre
-        className={clsx([
-          "overflow-x-auto",
-          "whitespace-pre-wrap",
-          "break-all",
-          "font-mono",
-          "text-xs",
-          "leading-5",
-          "text-zinc-800",
-        ])}
-      >
-        {record.text || "(空)"}
-      </pre>
+      <div className={clsx(["relative"])}>
+        <pre
+          className={clsx([
+            "overflow-x-auto",
+            "whitespace-pre-wrap",
+            "break-all",
+            "pr-10",
+            "font-mono",
+            "text-xs",
+            "leading-5",
+            "text-zinc-800",
+          ])}
+        >
+          {payload || "(空)"}
+        </pre>
+        <button
+          type="button"
+          aria-label={`レコード ${index + 1} をコピー`}
+          title={
+            copyState === "copied" ? "コピーしました" : copyState === "failed" ? "失敗" : "コピー"
+          }
+          disabled={!payload}
+          className={clsx([
+            "absolute",
+            "top-0",
+            "right-0",
+            "inline-flex",
+            "size-8",
+            "items-center",
+            "justify-center",
+            "rounded-md",
+            "border",
+            "border-zinc-200",
+            "bg-white",
+            "text-zinc-700",
+            "disabled:cursor-not-allowed",
+            "disabled:opacity-40",
+          ])}
+          onClick={async () => {
+            try {
+              await navigator.clipboard.writeText(payload);
+              setCopyState("copied");
+            } catch {
+              setCopyState("failed");
+            }
+          }}
+        >
+          <ClipboardCopy aria-hidden="true" className={clsx(["size-4"])} />
+        </button>
+      </div>
+      {copyState === "copied" ? (
+        <p className={clsx(["text-xs", "text-emerald-700"])}>コピーしました</p>
+      ) : null}
+      {copyState === "failed" ? (
+        <p className={clsx(["text-xs", "text-red-700"])}>コピーに失敗しました</p>
+      ) : null}
     </article>
   );
 }
