@@ -67,7 +67,9 @@ export function useNfcWrite(): UseNfcWriteResult {
           signal: controller.signal,
         });
 
-        if (!isCurrentAttempt() || controller.signal.aborted || completedRef.current) {
+        // write が resolve 済みならタグへの書込は成功している。
+        // 直後の cancel で aborted になっても writing のまま固めない。
+        if (!isCurrentAttempt() || completedRef.current) {
           return;
         }
 
