@@ -1,6 +1,6 @@
 /**
  * Web NFC（NDEF）の型定義。
- * 読取に必要な範囲を中心に定義する。
+ * 読取・書込に必要な範囲を定義する。
  *
  * @see https://w3c.github.io/web-nfc/
  */

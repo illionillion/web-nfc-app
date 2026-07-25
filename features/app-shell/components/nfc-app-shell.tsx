@@ -8,16 +8,39 @@ import { ShellSection } from "@/features/app-shell/components/shell-section";
 import { useNfcSupport } from "@/features/app-shell/hooks/use-nfc-support";
 import { ReadResultPanel } from "@/features/nfc-read/components/read-result-panel";
 import { useNfcScan } from "@/features/nfc-read/hooks/use-nfc-scan";
+import { WriteDraftPanel } from "@/features/nfc-write/components/write-draft-panel";
+import { useNfcWrite } from "@/features/nfc-write/hooks/use-nfc-write";
+import { useWriteDraft } from "@/features/nfc-write/hooks/use-write-draft";
+import { validateWriteDraft } from "@/lib/nfc/build-ndef-message";
 
 /**
  * Web NFC ツール本体のシェル。
- * 対応判定と読取を担当し、書込・履歴の本実装は後続 Issue に委ねる。
+ * 対応判定・読取・書込を担当し、履歴の本実装は後続 Issue に委ねる。
  */
 export function NfcAppShell() {
   const support = useNfcSupport();
-  const { phase, result, errorMessage, startScan, cancelScan } = useNfcScan();
+  const {
+    phase,
+    result,
+    errorMessage,
+    isSessionActive: isScanSessionActive,
+    startScan,
+    cancelScan,
+  } = useNfcScan();
+  const {
+    phase: writePhase,
+    errorMessage: writeErrorMessage,
+    isSessionActive: isWriteSessionActive,
+    startWrite,
+    cancelWrite,
+  } = useNfcWrite();
+  const { records, appendRecord, updateRecord, removeRecord } = useWriteDraft();
+
   const unsupported = support.kind !== "supported";
   const isScanning = phase === "scanning";
+  const isWriting = writePhase === "writing";
+  const nfcLocked = isScanSessionActive || isWriteSessionActive;
+  const canWrite = !unsupported && validateWriteDraft(records) === null;
 
   return (
     <div
@@ -54,8 +77,27 @@ export function NfcAppShell() {
         <ActionBar
           disabled={unsupported}
           isScanning={isScanning}
-          onScan={unsupported ? undefined : () => void startScan()}
+          isWriting={isWriting}
+          nfcLocked={nfcLocked}
+          canWrite={canWrite}
+          onScan={
+            unsupported
+              ? undefined
+              : () => {
+                  cancelWrite();
+                  void startScan();
+                }
+          }
           onCancelScan={cancelScan}
+          onWrite={
+            unsupported
+              ? undefined
+              : () => {
+                  cancelScan();
+                  void startWrite(records);
+                }
+          }
+          onCancelWrite={cancelWrite}
         />
       </header>
 
@@ -70,9 +112,16 @@ export function NfcAppShell() {
 
       <ShellSection
         title="書込内容"
-        description="書き込むレコードを編集します。text / url / json の詳細 UI は後続で追加します。"
+        description="text / url / json レコードを追加・編集してからタグへ書き込みます。"
       >
-        <PlaceholderBox>下書きはまだありません</PlaceholderBox>
+        <WriteDraftPanel
+          records={records}
+          writePhase={writePhase}
+          writeErrorMessage={writeErrorMessage}
+          onAppend={appendRecord}
+          onUpdate={(next) => updateRecord(next.id, { kind: next.kind, value: next.value })}
+          onRemove={removeRecord}
+        />
       </ShellSection>
 
       <ShellSection title="履歴" description="最近の読取結果がここに残ります。">

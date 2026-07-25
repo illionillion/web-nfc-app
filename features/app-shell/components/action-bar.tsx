@@ -1,33 +1,63 @@
 import { clsx } from "clsx";
 
 type ActionBarProps = {
-  /** 書込・消去を無効化するか（非対応時など） */
+  /** 非対応時など全体を無効化するか */
   disabled: boolean;
-  /** スキャン中か */
+  /** スキャン中か（キャンセル表示） */
   isScanning?: boolean;
+  /** 書込中か（キャンセル表示） */
+  isWriting?: boolean;
+  /** scan/write の promise 未完了など、NFC 操作をロックするか */
+  nfcLocked?: boolean;
+  /** 書き込み可能か（下書きが妥当なときなど） */
+  canWrite?: boolean;
   /** スキャン開始 */
   onScan?: () => void;
   /** スキャンキャンセル */
   onCancelScan?: () => void;
+  /** 書込開始 */
+  onWrite?: () => void;
+  /** 書込キャンセル */
+  onCancelWrite?: () => void;
 };
 
 /**
  * スキャン / 書き込み / 消去の操作ボタン。
- * 書込・消去の本実装は後続 Issue。
+ * 消去の本実装は後続 Issue。
  */
-export function ActionBar({ disabled, isScanning = false, onScan, onCancelScan }: ActionBarProps) {
+export function ActionBar({
+  disabled,
+  isScanning = false,
+  isWriting = false,
+  nfcLocked = false,
+  canWrite = false,
+  onScan,
+  onCancelScan,
+  onWrite,
+  onCancelWrite,
+}: ActionBarProps) {
+  const busy = isScanning || isWriting || nfcLocked;
+
   return (
     <div className={clsx(["flex", "flex-wrap", "gap-2"])} role="group" aria-label="NFC 操作">
       {isScanning ? (
-        <ActionButton disabled={false} onClick={onCancelScan}>
+        <ActionButton disabled={!onCancelScan} onClick={onCancelScan}>
           キャンセル
         </ActionButton>
       ) : (
-        <ActionButton disabled={disabled || !onScan} onClick={onScan}>
+        <ActionButton disabled={disabled || busy || !onScan} onClick={onScan}>
           スキャン
         </ActionButton>
       )}
-      <ActionButton disabled>書き込む</ActionButton>
+      {isWriting ? (
+        <ActionButton disabled={!onCancelWrite} onClick={onCancelWrite}>
+          書込キャンセル
+        </ActionButton>
+      ) : (
+        <ActionButton disabled={disabled || busy || !canWrite || !onWrite} onClick={onWrite}>
+          書き込む
+        </ActionButton>
+      )}
       <ActionButton disabled>消去</ActionButton>
     </div>
   );

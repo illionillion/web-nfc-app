@@ -15,6 +15,8 @@ type UseNfcScanResult = {
   phase: NfcScanPhase;
   result: NfcReadResult | null;
   errorMessage: string | null;
+  /** scan() の promise が終わるまで true（成功直後の書込重なり防止） */
+  isSessionActive: boolean;
   startScan: () => Promise<void>;
   cancelScan: () => void;
 };
@@ -28,8 +30,10 @@ export function useNfcScan(): UseNfcScanResult {
   const [phase, setPhase] = useState<NfcScanPhase>("idle");
   const [result, setResult] = useState<NfcReadResult | null>(null);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const [isSessionActive, setIsSessionActive] = useState(false);
   const abortRef = useRef<AbortController | null>(null);
   const completedRef = useRef(false);
+  const attemptIdRef = useRef(0);
 
   const cancelScan = useCallback(() => {
     abortRef.current?.abort();
@@ -46,11 +50,16 @@ export function useNfcScan(): UseNfcScanResult {
     cancelScan();
     completedRef.current = false;
 
+    const attemptId = attemptIdRef.current + 1;
+    attemptIdRef.current = attemptId;
+    const isCurrentAttempt = () => attemptId === attemptIdRef.current;
+
     const controller = new AbortController();
     abortRef.current = controller;
 
     setPhase("scanning");
     setErrorMessage(null);
+    setIsSessionActive(true);
 
     try {
       const reader = new NDEFReader();
@@ -87,6 +96,10 @@ export function useNfcScan(): UseNfcScanResult {
 
       await reader.scan({ signal: controller.signal });
     } catch (error) {
+      if (!isCurrentAttempt()) {
+        return;
+      }
+
       if (controller.signal.aborted) {
         if (!completedRef.current) {
           setPhase("cancelled");
@@ -98,6 +111,10 @@ export function useNfcScan(): UseNfcScanResult {
       setPhase("error");
       setErrorMessage(toScanErrorMessage(error));
       abortRef.current = null;
+    } finally {
+      if (isCurrentAttempt()) {
+        setIsSessionActive(false);
+      }
     }
   }, [cancelScan]);
 
@@ -112,6 +129,7 @@ export function useNfcScan(): UseNfcScanResult {
     phase,
     result,
     errorMessage,
+    isSessionActive,
     startScan,
     cancelScan,
   };
