@@ -26,7 +26,7 @@ export function NfcAppShell() {
     startWrite,
     cancelWrite,
   } = useNfcWrite();
-  const { records, addRecord, updateRecord, removeRecord } = useWriteDraft();
+  const { records, appendRecord, updateRecord, removeRecord } = useWriteDraft();
 
   const unsupported = support.kind !== "supported";
   const isScanning = phase === "scanning";
@@ -94,7 +94,7 @@ export function NfcAppShell() {
           records={records}
           writePhase={writePhase}
           writeErrorMessage={writeErrorMessage}
-          onAdd={addRecord}
+          onAppend={appendRecord}
           onUpdate={(next) => updateRecord(next.id, { kind: next.kind, value: next.value })}
           onRemove={removeRecord}
         />

@@ -4,6 +4,7 @@ import { clsx } from "clsx";
 import { useState } from "react";
 
 import { RecordEditModal } from "@/features/nfc-write/components/record-edit-modal";
+import { createDraftRecord } from "@/features/nfc-write/lib/draft-defaults";
 import type { NfcWritePhase, WriteDraftRecord, WriteRecordKind } from "@/features/nfc-write/types";
 import {
   getWriteRecordKindLabel,
@@ -15,23 +16,29 @@ type WriteDraftPanelProps = {
   records: WriteDraftRecord[];
   writePhase: NfcWritePhase;
   writeErrorMessage: string | null;
-  onAdd: (kind: WriteRecordKind) => WriteDraftRecord;
+  onAppend: (record: WriteDraftRecord) => void;
   onUpdate: (record: WriteDraftRecord) => void;
   onRemove: (id: string) => void;
 };
 
+type EditorState = {
+  mode: "create" | "edit";
+  record: WriteDraftRecord;
+};
+
 /**
  * 書込内容セクション。一覧 + 追加 + モーダル編集。
+ * 追加はモーダルで保存するまで一覧に反映しない。
  */
 export function WriteDraftPanel({
   records,
   writePhase,
   writeErrorMessage,
-  onAdd,
+  onAppend,
   onUpdate,
   onRemove,
 }: WriteDraftPanelProps) {
-  const [editing, setEditing] = useState<WriteDraftRecord | null>(null);
+  const [editor, setEditor] = useState<EditorState | null>(null);
   const draftIssue = validateWriteDraft(records);
 
   return (
@@ -64,8 +71,7 @@ export function WriteDraftPanel({
               "text-zinc-900",
             ])}
             onClick={() => {
-              const created = onAdd(kind);
-              setEditing(created);
+              setEditor({ mode: "create", record: createDraftRecord(kind) });
             }}
           >
             {getWriteRecordKindLabel(kind)} を追加
@@ -127,7 +133,7 @@ export function WriteDraftPanel({
                           "text-xs",
                           "font-medium",
                         ])}
-                        onClick={() => setEditing(record)}
+                        onClick={() => setEditor({ mode: "edit", record })}
                       >
                         編集
                       </button>
@@ -170,13 +176,17 @@ export function WriteDraftPanel({
         </ul>
       )}
 
-      {editing ? (
+      {editor ? (
         <RecordEditModal
-          record={editing}
-          onClose={() => setEditing(null)}
+          record={editor.record}
+          onClose={() => setEditor(null)}
           onSave={(next) => {
-            onUpdate(next);
-            setEditing(null);
+            if (editor.mode === "create") {
+              onAppend(next);
+            } else {
+              onUpdate(next);
+            }
+            setEditor(null);
           }}
         />
       ) : null}

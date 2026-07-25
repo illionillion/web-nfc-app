@@ -2,12 +2,12 @@
 
 import { useCallback, useState } from "react";
 
-import type { WriteDraftRecord, WriteRecordKind } from "@/features/nfc-write/types";
-import { defaultValueForKind } from "@/features/nfc-write/lib/draft-defaults";
+import type { WriteDraftRecord } from "@/features/nfc-write/types";
 
 type UseWriteDraftResult = {
   records: WriteDraftRecord[];
-  addRecord: (kind: WriteRecordKind) => WriteDraftRecord;
+  /** 保存確定したレコードを一覧へ追加する */
+  appendRecord: (record: WriteDraftRecord) => void;
   updateRecord: (id: string, patch: Partial<Pick<WriteDraftRecord, "value" | "kind">>) => void;
   removeRecord: (id: string) => void;
   replaceRecords: (next: WriteDraftRecord[]) => void;
@@ -21,14 +21,8 @@ type UseWriteDraftResult = {
 export function useWriteDraft(): UseWriteDraftResult {
   const [records, setRecords] = useState<WriteDraftRecord[]>([]);
 
-  const addRecord = useCallback((kind: WriteRecordKind) => {
-    const next: WriteDraftRecord = {
-      id: createDraftId(),
-      kind,
-      value: defaultValueForKind(kind),
-    };
-    setRecords((current) => [...current, next]);
-    return next;
+  const appendRecord = useCallback((record: WriteDraftRecord) => {
+    setRecords((current) => [...current, record]);
   }, []);
 
   const updateRecord = useCallback(
@@ -50,21 +44,9 @@ export function useWriteDraft(): UseWriteDraftResult {
 
   return {
     records,
-    addRecord,
+    appendRecord,
     updateRecord,
     removeRecord,
     replaceRecords,
   };
-}
-
-/**
- * 下書きレコード用の一意 ID を生成する。
- *
- * @returns ID
- */
-function createDraftId(): string {
-  if (typeof crypto !== "undefined" && "randomUUID" in crypto) {
-    return crypto.randomUUID();
-  }
-  return `draft-${Date.now()}-${Math.random().toString(16).slice(2)}`;
 }
