@@ -125,14 +125,50 @@ function RecordCard({ record, index }: RecordCardProps) {
   return (
     <article
       className={clsx([
+        "relative",
         "space-y-2",
         "rounded-md",
         "border",
         "border-zinc-200",
         "bg-zinc-50",
         "p-3",
+        "pr-12",
       ])}
     >
+      <button
+        type="button"
+        aria-label={`レコード ${index + 1} をコピー`}
+        title={
+          copyState === "copied" ? "コピーしました" : copyState === "failed" ? "失敗" : "コピー"
+        }
+        disabled={!payload}
+        className={clsx([
+          "absolute",
+          "top-3",
+          "right-3",
+          "inline-flex",
+          "size-8",
+          "items-center",
+          "justify-center",
+          "rounded-md",
+          "border",
+          "border-zinc-200",
+          "bg-white",
+          "text-zinc-700",
+          "disabled:cursor-not-allowed",
+          "disabled:opacity-40",
+        ])}
+        onClick={async () => {
+          try {
+            await navigator.clipboard.writeText(payload);
+            setCopyState("copied");
+          } catch {
+            setCopyState("failed");
+          }
+        }}
+      >
+        <ClipboardCopy aria-hidden="true" className={clsx(["size-4"])} />
+      </button>
       <header className={clsx(["flex", "items-center", "justify-between", "gap-2"])}>
         <p className={clsx(["text-sm", "font-medium", "text-zinc-900"])}>
           #{index + 1} {getRecordKindLabel(record.kind)}
@@ -141,56 +177,19 @@ function RecordCard({ record, index }: RecordCardProps) {
           <p className={clsx(["text-xs", "text-zinc-500"])}>{record.mediaType}</p>
         ) : null}
       </header>
-      <div className={clsx(["relative"])}>
-        <pre
-          className={clsx([
-            "overflow-x-auto",
-            "whitespace-pre-wrap",
-            "break-all",
-            "pr-10",
-            "font-mono",
-            "text-xs",
-            "leading-5",
-            "text-zinc-800",
-          ])}
-        >
-          {payload || "(空)"}
-        </pre>
-        <button
-          type="button"
-          aria-label={`レコード ${index + 1} をコピー`}
-          title={
-            copyState === "copied" ? "コピーしました" : copyState === "failed" ? "失敗" : "コピー"
-          }
-          disabled={!payload}
-          className={clsx([
-            "absolute",
-            "top-0",
-            "right-0",
-            "inline-flex",
-            "size-8",
-            "items-center",
-            "justify-center",
-            "rounded-md",
-            "border",
-            "border-zinc-200",
-            "bg-white",
-            "text-zinc-700",
-            "disabled:cursor-not-allowed",
-            "disabled:opacity-40",
-          ])}
-          onClick={async () => {
-            try {
-              await navigator.clipboard.writeText(payload);
-              setCopyState("copied");
-            } catch {
-              setCopyState("failed");
-            }
-          }}
-        >
-          <ClipboardCopy aria-hidden="true" className={clsx(["size-4"])} />
-        </button>
-      </div>
+      <pre
+        className={clsx([
+          "overflow-x-auto",
+          "whitespace-pre-wrap",
+          "break-all",
+          "font-mono",
+          "text-xs",
+          "leading-5",
+          "text-zinc-800",
+        ])}
+      >
+        {payload || "(空)"}
+      </pre>
       {copyState === "copied" ? (
         <p className={clsx(["text-xs", "text-emerald-700"])}>コピーしました</p>
       ) : null}
