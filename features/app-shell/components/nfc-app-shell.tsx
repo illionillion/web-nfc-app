@@ -19,10 +19,18 @@ import { validateWriteDraft } from "@/lib/nfc/build-ndef-message";
  */
 export function NfcAppShell() {
   const support = useNfcSupport();
-  const { phase, result, errorMessage, startScan, cancelScan } = useNfcScan();
+  const {
+    phase,
+    result,
+    errorMessage,
+    isSessionActive: isScanSessionActive,
+    startScan,
+    cancelScan,
+  } = useNfcScan();
   const {
     phase: writePhase,
     errorMessage: writeErrorMessage,
+    isSessionActive: isWriteSessionActive,
     startWrite,
     cancelWrite,
   } = useNfcWrite();
@@ -31,6 +39,7 @@ export function NfcAppShell() {
   const unsupported = support.kind !== "supported";
   const isScanning = phase === "scanning";
   const isWriting = writePhase === "writing";
+  const nfcLocked = isScanSessionActive || isWriteSessionActive;
   const canWrite = !unsupported && validateWriteDraft(records) === null;
 
   return (
@@ -69,10 +78,25 @@ export function NfcAppShell() {
           disabled={unsupported}
           isScanning={isScanning}
           isWriting={isWriting}
+          nfcLocked={nfcLocked}
           canWrite={canWrite}
-          onScan={unsupported ? undefined : () => void startScan()}
+          onScan={
+            unsupported
+              ? undefined
+              : () => {
+                  cancelWrite();
+                  void startScan();
+                }
+          }
           onCancelScan={cancelScan}
-          onWrite={unsupported ? undefined : () => void startWrite(records)}
+          onWrite={
+            unsupported
+              ? undefined
+              : () => {
+                  cancelScan();
+                  void startWrite(records);
+                }
+          }
           onCancelWrite={cancelWrite}
         />
       </header>

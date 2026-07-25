@@ -9,6 +9,8 @@ import { isNdefReaderAvailable } from "@/lib/nfc/support";
 type UseNfcWriteResult = {
   phase: NfcWritePhase;
   errorMessage: string | null;
+  /** write() の promise が終わるまで true */
+  isSessionActive: boolean;
   startWrite: (records: WriteDraftRecord[]) => Promise<void>;
   cancelWrite: () => void;
 };
@@ -21,6 +23,7 @@ type UseNfcWriteResult = {
 export function useNfcWrite(): UseNfcWriteResult {
   const [phase, setPhase] = useState<NfcWritePhase>("idle");
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const [isSessionActive, setIsSessionActive] = useState(false);
   const abortRef = useRef<AbortController | null>(null);
   const completedRef = useRef(false);
   const attemptIdRef = useRef(0);
@@ -56,6 +59,7 @@ export function useNfcWrite(): UseNfcWriteResult {
 
       setPhase("writing");
       setErrorMessage(null);
+      setIsSessionActive(true);
 
       const isCurrentAttempt = () => attemptId === attemptIdRef.current;
 
@@ -95,6 +99,10 @@ export function useNfcWrite(): UseNfcWriteResult {
         setPhase("error");
         setErrorMessage(toWriteErrorMessage(error));
         abortRef.current = null;
+      } finally {
+        if (isCurrentAttempt()) {
+          setIsSessionActive(false);
+        }
       }
     },
     [cancelWrite]
@@ -110,6 +118,7 @@ export function useNfcWrite(): UseNfcWriteResult {
   return {
     phase,
     errorMessage,
+    isSessionActive,
     startWrite,
     cancelWrite,
   };

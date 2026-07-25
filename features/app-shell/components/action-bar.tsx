@@ -3,10 +3,12 @@ import { clsx } from "clsx";
 type ActionBarProps = {
   /** 非対応時など全体を無効化するか */
   disabled: boolean;
-  /** スキャン中か */
+  /** スキャン中か（キャンセル表示） */
   isScanning?: boolean;
-  /** 書込中か */
+  /** 書込中か（キャンセル表示） */
   isWriting?: boolean;
+  /** scan/write の promise 未完了など、NFC 操作をロックするか */
+  nfcLocked?: boolean;
   /** 書き込み可能か（下書きが妥当なときなど） */
   canWrite?: boolean;
   /** スキャン開始 */
@@ -27,13 +29,14 @@ export function ActionBar({
   disabled,
   isScanning = false,
   isWriting = false,
+  nfcLocked = false,
   canWrite = false,
   onScan,
   onCancelScan,
   onWrite,
   onCancelWrite,
 }: ActionBarProps) {
-  const busy = isScanning || isWriting;
+  const busy = isScanning || isWriting || nfcLocked;
 
   return (
     <div className={clsx(["flex", "flex-wrap", "gap-2"])} role="group" aria-label="NFC 操作">
