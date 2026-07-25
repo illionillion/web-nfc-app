@@ -4,6 +4,7 @@ import { clsx } from "clsx";
 import { useEffect, useId, useRef, useState } from "react";
 
 import { JsonCodeEditor } from "@/features/nfc-write/components/json-code-editor";
+import { createKindValueCache } from "@/features/nfc-write/lib/draft-defaults";
 import type { WriteDraftRecord, WriteRecordKind } from "@/features/nfc-write/types";
 import { getWriteRecordKindLabel, validateWriteDraftRecord } from "@/lib/nfc/build-ndef-message";
 
@@ -15,14 +16,16 @@ type RecordEditModalProps = {
 
 /**
  * レコード編集モーダル。種別ごとに入力 UI を切り替える。
+ * 種別切替時は text / url / json それぞれの入力をキャッシュして保持する。
  */
 export function RecordEditModal({ record, onClose, onSave }: RecordEditModalProps) {
   const titleId = useId();
   const inputId = useId();
   const dialogRef = useRef<HTMLDialogElement>(null);
   const [kind, setKind] = useState<WriteRecordKind>(record.kind);
-  const [value, setValue] = useState(record.value);
+  const [valuesByKind, setValuesByKind] = useState(() => createKindValueCache(record));
   const [error, setError] = useState<string | null>(null);
+  const value = valuesByKind[kind];
 
   useEffect(() => {
     const dialog = dialogRef.current;
@@ -42,6 +45,16 @@ export function RecordEditModal({ record, onClose, onSave }: RecordEditModalProp
       dialog.removeEventListener("cancel", onCancel);
     };
   }, [onClose]);
+
+  /**
+   * 現在の種別の入力値を更新する。
+   *
+   * @param next - 新しい値
+   */
+  function updateCurrentValue(next: string) {
+    setValuesByKind((current) => ({ ...current, [kind]: next }));
+    setError(null);
+  }
 
   return (
     <dialog
@@ -135,10 +148,7 @@ export function RecordEditModal({ record, onClose, onSave }: RecordEditModalProp
                 "py-2",
                 "text-sm",
               ])}
-              onChange={(event) => {
-                setValue(event.target.value);
-                setError(null);
-              }}
+              onChange={(event) => updateCurrentValue(event.target.value)}
             />
           ) : null}
           {kind === "url" ? (
@@ -156,10 +166,7 @@ export function RecordEditModal({ record, onClose, onSave }: RecordEditModalProp
                 "px-3",
                 "text-sm",
               ])}
-              onChange={(event) => {
-                setValue(event.target.value);
-                setError(null);
-              }}
+              onChange={(event) => updateCurrentValue(event.target.value)}
             />
           ) : null}
           {kind === "json" ? (
@@ -167,10 +174,7 @@ export function RecordEditModal({ record, onClose, onSave }: RecordEditModalProp
               id={inputId}
               value={value}
               invalid={Boolean(error)}
-              onChange={(next) => {
-                setValue(next);
-                setError(null);
-              }}
+              onChange={updateCurrentValue}
             />
           ) : null}
         </div>

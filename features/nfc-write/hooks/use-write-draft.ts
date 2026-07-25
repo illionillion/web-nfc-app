@@ -3,6 +3,7 @@
 import { useCallback, useState } from "react";
 
 import type { WriteDraftRecord, WriteRecordKind } from "@/features/nfc-write/types";
+import { defaultValueForKind } from "@/features/nfc-write/lib/draft-defaults";
 
 type UseWriteDraftResult = {
   records: WriteDraftRecord[];
@@ -66,21 +67,4 @@ function createDraftId(): string {
     return crypto.randomUUID();
   }
   return `draft-${Date.now()}-${Math.random().toString(16).slice(2)}`;
-}
-
-/**
- * 種別ごとの初期値。
- *
- * @param kind - 種別
- * @returns 初期文字列
- */
-function defaultValueForKind(kind: WriteRecordKind): string {
-  switch (kind) {
-    case "text":
-      return "";
-    case "url":
-      return "";
-    case "json":
-      return "{\n  \n}";
-  }
 }
