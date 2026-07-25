@@ -5,7 +5,7 @@ import { useState } from "react";
 
 import { RecordEditModal } from "@/features/nfc-write/components/record-edit-modal";
 import { createDraftRecord } from "@/features/nfc-write/lib/draft-defaults";
-import type { NfcWritePhase, WriteDraftRecord, WriteRecordKind } from "@/features/nfc-write/types";
+import type { NfcWritePhase, WriteDraftRecord } from "@/features/nfc-write/types";
 import {
   getWriteRecordKindLabel,
   validateWriteDraft,
