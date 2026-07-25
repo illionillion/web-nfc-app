@@ -38,7 +38,7 @@ export function ActionBar({
   return (
     <div className={clsx(["flex", "flex-wrap", "gap-2"])} role="group" aria-label="NFC 操作">
       {isScanning ? (
-        <ActionButton disabled={false} onClick={onCancelScan}>
+        <ActionButton disabled={!onCancelScan} onClick={onCancelScan}>
           キャンセル
         </ActionButton>
       ) : (
@@ -47,7 +47,7 @@ export function ActionBar({
         </ActionButton>
       )}
       {isWriting ? (
-        <ActionButton disabled={false} onClick={onCancelWrite}>
+        <ActionButton disabled={!onCancelWrite} onClick={onCancelWrite}>
           書込キャンセル
         </ActionButton>
       ) : (

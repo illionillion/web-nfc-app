@@ -23,6 +23,7 @@ export function useNfcWrite(): UseNfcWriteResult {
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const abortRef = useRef<AbortController | null>(null);
   const completedRef = useRef(false);
+  const attemptIdRef = useRef(0);
 
   const cancelWrite = useCallback(() => {
     abortRef.current?.abort();
@@ -47,11 +48,16 @@ export function useNfcWrite(): UseNfcWriteResult {
       cancelWrite();
       completedRef.current = false;
 
+      const attemptId = attemptIdRef.current + 1;
+      attemptIdRef.current = attemptId;
+
       const controller = new AbortController();
       abortRef.current = controller;
 
       setPhase("writing");
       setErrorMessage(null);
+
+      const isCurrentAttempt = () => attemptId === attemptIdRef.current;
 
       try {
         const reader = new NDEFReader();
@@ -61,7 +67,7 @@ export function useNfcWrite(): UseNfcWriteResult {
           signal: controller.signal,
         });
 
-        if (controller.signal.aborted || completedRef.current) {
+        if (!isCurrentAttempt() || controller.signal.aborted || completedRef.current) {
           return;
         }
 
@@ -70,6 +76,11 @@ export function useNfcWrite(): UseNfcWriteResult {
         setErrorMessage(null);
         abortRef.current = null;
       } catch (error) {
+        // 連続 startWrite で abort された旧試行は、現行の phase を上書きしない
+        if (!isCurrentAttempt()) {
+          return;
+        }
+
         if (controller.signal.aborted) {
           if (!completedRef.current) {
             setPhase("cancelled");
