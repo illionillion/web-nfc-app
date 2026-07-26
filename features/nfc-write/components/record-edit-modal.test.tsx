@@ -1,6 +1,6 @@
 import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { beforeAll, beforeEach, describe, expect, it, vi } from "vitest";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 
 import { RecordEditModal } from "@/features/nfc-write/components/record-edit-modal";
 import type { WriteDraftRecord } from "@/features/nfc-write/types";
@@ -10,19 +10,6 @@ const seedRecord: WriteDraftRecord = {
   kind: "text",
   value: "",
 };
-
-beforeAll(() => {
-  if (typeof HTMLDialogElement.prototype.showModal !== "function") {
-    HTMLDialogElement.prototype.showModal = function showModal(this: HTMLDialogElement) {
-      this.setAttribute("open", "");
-    };
-  }
-  if (typeof HTMLDialogElement.prototype.close !== "function") {
-    HTMLDialogElement.prototype.close = function close(this: HTMLDialogElement) {
-      this.removeAttribute("open");
-    };
-  }
-});
 
 describe("RecordEditModal", () => {
   beforeEach(() => {

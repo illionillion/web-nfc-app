@@ -1,22 +1,9 @@
 import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { beforeAll, beforeEach, describe, expect, it, vi } from "vitest";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 
 import { WriteDraftPanel } from "@/features/nfc-write/components/write-draft-panel";
 import type { WriteDraftRecord } from "@/features/nfc-write/types";
-
-beforeAll(() => {
-  if (typeof HTMLDialogElement.prototype.showModal !== "function") {
-    HTMLDialogElement.prototype.showModal = function showModal(this: HTMLDialogElement) {
-      this.setAttribute("open", "");
-    };
-  }
-  if (typeof HTMLDialogElement.prototype.close !== "function") {
-    HTMLDialogElement.prototype.close = function close(this: HTMLDialogElement) {
-      this.removeAttribute("open");
-    };
-  }
-});
 
 type DraftHandlers = {
   onAppend: (record: WriteDraftRecord) => void;
