@@ -1,9 +1,17 @@
 import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
+import { toast } from "sonner";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 import { ReadResultPanel } from "@/features/nfc-read/components/read-result-panel";
 import type { NfcReadResult } from "@/features/nfc-read/types";
+
+vi.mock("sonner", () => ({
+  toast: {
+    success: vi.fn(),
+    error: vi.fn(),
+  },
+}));
 
 const sampleResult: NfcReadResult = {
   serialNumber: "AA:BB",
@@ -76,10 +84,11 @@ describe("ReadResultPanel", () => {
 
     expect(writeText).toHaveBeenCalledTimes(1);
     expect(writeText.mock.calls[0]?.[0]).toContain("hello-copy");
-    expect(screen.getByText("コピーしました")).toBeInTheDocument();
+    expect(toast.success).toHaveBeenCalledWith("コピーしました");
+    expect(screen.queryByText("コピーしました")).not.toBeInTheDocument();
   });
 
-  it("全体コピー失敗時に失敗表示する", async () => {
+  it("全体コピー失敗時に失敗トーストを出す", async () => {
     const user = userEvent.setup();
     stubClipboard({
       writeText: vi.fn().mockRejectedValue(new Error("denied")),
@@ -89,7 +98,8 @@ describe("ReadResultPanel", () => {
 
     await user.click(screen.getByRole("button", { name: "結果をコピー" }));
 
-    expect(screen.getByText("コピーに失敗しました")).toBeInTheDocument();
+    expect(toast.error).toHaveBeenCalledWith("コピーに失敗しました");
+    expect(screen.queryByText("コピーに失敗しました")).not.toBeInTheDocument();
   });
 
   it("レコード単位でもコピーできる", async () => {
@@ -102,6 +112,7 @@ describe("ReadResultPanel", () => {
     await user.click(screen.getByRole("button", { name: "レコード 1 をコピー" }));
 
     expect(writeText).toHaveBeenCalledWith("hello-copy");
-    expect(screen.getByText("コピーしました")).toBeInTheDocument();
+    expect(toast.success).toHaveBeenCalledWith("コピーしました");
+    expect(screen.queryByText("コピーしました")).not.toBeInTheDocument();
   });
 });
