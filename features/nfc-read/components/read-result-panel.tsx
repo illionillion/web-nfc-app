@@ -2,7 +2,7 @@
 
 import { clsx } from "clsx";
 import { ClipboardCopy } from "lucide-react";
-import { useState } from "react";
+import { toast } from "sonner";
 
 import type { NfcScanPhase } from "@/features/nfc-read/hooks/use-nfc-scan";
 import type { NfcReadResult, ParsedNdefRecord } from "@/features/nfc-read/types";
@@ -19,8 +19,6 @@ type ReadResultPanelProps = {
  * 「いまの結果」セクションの表示とコピー操作。
  */
 export function ReadResultPanel({ phase, result, errorMessage }: ReadResultPanelProps) {
-  const [copyState, setCopyState] = useState<"idle" | "copied" | "failed">("idle");
-
   if (phase === "scanning") {
     return <StatusText>スキャン中です。タグをかざしてください。</StatusText>;
   }
@@ -88,23 +86,12 @@ export function ReadResultPanel({ phase, result, errorMessage }: ReadResultPanel
             "font-medium",
             "text-zinc-900",
           ])}
-          onClick={async () => {
-            try {
-              await navigator.clipboard.writeText(formatReadResultForClipboard(result));
-              setCopyState("copied");
-            } catch {
-              setCopyState("failed");
-            }
+          onClick={() => {
+            void copyTextToClipboard(formatReadResultForClipboard(result));
           }}
         >
           結果をコピー
         </button>
-        {copyState === "copied" ? (
-          <span className={clsx(["text-sm", "text-emerald-700"])}>コピーしました</span>
-        ) : null}
-        {copyState === "failed" ? (
-          <span className={clsx(["text-sm", "text-red-700"])}>コピーに失敗しました</span>
-        ) : null}
       </div>
     </div>
   );
@@ -119,7 +106,6 @@ type RecordCardProps = {
  * 1レコード分の表示カード。
  */
 function RecordCard({ record, index }: RecordCardProps) {
-  const [copyState, setCopyState] = useState<"idle" | "copied" | "failed">("idle");
   const payload = record.text || "";
 
   return (
@@ -138,9 +124,7 @@ function RecordCard({ record, index }: RecordCardProps) {
       <button
         type="button"
         aria-label={`レコード ${index + 1} をコピー`}
-        title={
-          copyState === "copied" ? "コピーしました" : copyState === "failed" ? "失敗" : "コピー"
-        }
+        title="コピー"
         disabled={!payload}
         className={clsx([
           "absolute",
@@ -158,13 +142,8 @@ function RecordCard({ record, index }: RecordCardProps) {
           "disabled:cursor-not-allowed",
           "disabled:opacity-40",
         ])}
-        onClick={async () => {
-          try {
-            await navigator.clipboard.writeText(payload);
-            setCopyState("copied");
-          } catch {
-            setCopyState("failed");
-          }
+        onClick={() => {
+          void copyTextToClipboard(payload);
         }}
       >
         <ClipboardCopy aria-hidden="true" className={clsx(["size-4"])} />
@@ -190,12 +169,6 @@ function RecordCard({ record, index }: RecordCardProps) {
       >
         {payload || "(空)"}
       </pre>
-      {copyState === "copied" ? (
-        <p className={clsx(["text-xs", "text-emerald-700"])}>コピーしました</p>
-      ) : null}
-      {copyState === "failed" ? (
-        <p className={clsx(["text-xs", "text-red-700"])}>コピーに失敗しました</p>
-      ) : null}
     </article>
   );
 }
@@ -225,6 +198,20 @@ function StatusText({ children }: StatusTextProps) {
       {children}
     </p>
   );
+}
+
+/**
+ * クリップボードへ書き込み、結果をトーストで通知する。
+ *
+ * @param text - コピーする文字列
+ */
+async function copyTextToClipboard(text: string): Promise<void> {
+  try {
+    await navigator.clipboard.writeText(text);
+    toast.success("コピーしました");
+  } catch {
+    toast.error("コピーに失敗しました");
+  }
 }
 
 /**
