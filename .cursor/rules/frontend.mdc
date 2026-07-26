@@ -93,3 +93,22 @@ alwaysApply: false
 - テストの意図が明確なテスト名を付ける
 - モックは必要最小限にする
 - `beforeEach` で `vi.clearAllMocks()` を実行する
+- **ユーザー操作のシミュレーション**: クリック・入力・キーボード・ファイル選択は `userEvent.setup()` を使う。DnD / wheel / touch / IME composition / カスタム Event など相当 API が無い・低レベル制御が必要な場合のみ `fireEvent` を許可する（必要なら ESLint disable を明示）
+- **条件付きアサーション禁止**: テスト内の `if` で `expect` を囲まない。ケース分割や比較ヘルパーで必ず検証する
+
+### テスト実行
+
+```bash
+pnpm test:run path/to/test.tsx   # 特定ファイル
+pnpm test:watch                  # ウォッチモード（開発中推奨）
+pnpm test                        # Vitest UI なしの対話モード
+```
+
+### ESLint（テスト）
+
+テストファイル（`**/*.{test,spec}.{ts,tsx}`）では次を `error` で強制する（privacy-masking-app と同じ方針）:
+
+- `testing-library/prefer-user-event`
+- `vitest/no-conditional-expect`
+- `vitest/no-conditional-in-test`
+- `vitest/no-conditional-tests`

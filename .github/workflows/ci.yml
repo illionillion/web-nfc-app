@@ -86,10 +86,34 @@ jobs:
       - name: Check code formatting
         run: pnpm format:check
 
+  test:
+    name: Test
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          run_install: false
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version-file: ".nvmrc"
+          cache: "pnpm"
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Run unit tests
+        run: pnpm test:run
+
   build:
     name: Build
     runs-on: ubuntu-latest
-    needs: [eslint, type_check, format_check]
+    needs: [eslint, type_check, format_check, test]
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4

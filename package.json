@@ -13,6 +13,9 @@
     "type-check": "tsc --noEmit",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
+    "test": "vitest",
+    "test:run": "vitest run",
+    "test:watch": "vitest watch",
     "prepare": "lefthook install"
   },
   "dependencies": {
@@ -28,14 +31,22 @@
     "@commitlint/cli": "^20.5.0",
     "@commitlint/config-conventional": "^20.5.0",
     "@tailwindcss/postcss": "^4",
+    "@testing-library/jest-dom": "^7.0.0",
+    "@testing-library/react": "^16.3.2",
+    "@testing-library/user-event": "^14.6.1",
     "@types/node": "^22.20.1",
     "@types/react": "^19",
     "@types/react-dom": "^19",
+    "@vitejs/plugin-react": "^6.0.4",
+    "@vitest/eslint-plugin": "^1.6.24",
     "eslint": "^9",
     "eslint-config-next": "16.2.10",
+    "eslint-plugin-testing-library": "^7.16.2",
+    "jsdom": "^29.1.1",
     "lefthook": "^2.1.6",
     "prettier": "^3.8.3",
     "tailwindcss": "^4",
-    "typescript": "^5"
+    "typescript": "^5",
+    "vitest": "^4.1.10"
   }
 }
