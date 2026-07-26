@@ -17,3 +17,17 @@ if (typeof window.matchMedia !== "function") {
     }),
   });
 }
+
+// jsdom が <dialog> の showModal/close を未実装のときのみ polyfill する
+if (typeof HTMLDialogElement !== "undefined") {
+  if (typeof HTMLDialogElement.prototype.showModal !== "function") {
+    HTMLDialogElement.prototype.showModal = function showModal(this: HTMLDialogElement) {
+      this.setAttribute("open", "");
+    };
+  }
+  if (typeof HTMLDialogElement.prototype.close !== "function") {
+    HTMLDialogElement.prototype.close = function close(this: HTMLDialogElement) {
+      this.removeAttribute("open");
+    };
+  }
+}
