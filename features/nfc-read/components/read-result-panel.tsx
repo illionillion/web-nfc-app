@@ -13,12 +13,19 @@ type ReadResultPanelProps = {
   phase: NfcScanPhase;
   result: NfcReadResult | null;
   errorMessage: string | null;
+  /** 「この内容で書く」ハンドラ。未指定ならボタン非表示 */
+  onWriteThis?: (result: NfcReadResult) => void;
 };
 
 /**
  * 「いまの結果」セクションの表示とコピー操作。
  */
-export function ReadResultPanel({ phase, result, errorMessage }: ReadResultPanelProps) {
+export function ReadResultPanel({
+  phase,
+  result,
+  errorMessage,
+  onWriteThis,
+}: ReadResultPanelProps) {
   if (phase === "scanning") {
     return <StatusText>スキャン中です。タグをかざしてください。</StatusText>;
   }
@@ -92,6 +99,29 @@ export function ReadResultPanel({ phase, result, errorMessage }: ReadResultPanel
         >
           結果をコピー
         </button>
+        {onWriteThis ? (
+          <button
+            type="button"
+            className={clsx([
+              "min-h-11",
+              "rounded-md",
+              "border",
+              "border-zinc-900",
+              "bg-zinc-900",
+              "px-4",
+              "py-2",
+              "text-sm",
+              "font-medium",
+              "text-white",
+              "disabled:cursor-not-allowed",
+              "disabled:opacity-40",
+            ])}
+            disabled={!result.records.some((record) => record.kind !== "unknown")}
+            onClick={() => onWriteThis(result)}
+          >
+            この内容で書く
+          </button>
+        ) : null}
       </div>
     </div>
   );
