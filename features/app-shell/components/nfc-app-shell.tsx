@@ -266,7 +266,10 @@ export function NfcAppShell() {
             applyWriteThis(historyRecordsToWriteDraft(entry.records));
           }}
           onRemove={(entry) => {
-            removeEntry(entry.id);
+            const confirmed = window.confirm("この履歴を削除します。よろしいですか？");
+            if (confirmed) {
+              removeEntry(entry.id);
+            }
           }}
           onClear={() => {
             const confirmed = window.confirm("履歴をすべて削除します。よろしいですか？");
