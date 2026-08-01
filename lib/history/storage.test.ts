@@ -72,8 +72,38 @@ describe("history storage", () => {
     expect(next.at(-1)?.id).toBe(`old-${HISTORY_MAX_ITEMS - 2}`);
   });
 
+  it("保存が例外を投げても呼び出し元へ伝播しない", () => {
+    vi.stubGlobal("localStorage", {
+      getItem: () => null,
+      setItem: () => {
+        throw new DOMException("quota", "QuotaExceededError");
+      },
+      removeItem: () => {},
+      clear: () => {},
+    });
+
+    expect(() => saveHistoryEntries([sampleEntry("a")])).not.toThrow();
+  });
+
   it("壊れた JSON は空配列になる", () => {
     localStorage.setItem(HISTORY_STORAGE_KEY, "{not-json");
+    expect(loadHistoryEntries()).toEqual([]);
+  });
+
+  it("records の中身が壊れたエントリは読み込まない", () => {
+    const broken = { ...sampleEntry("broken"), records: [{ kind: "text", recordType: "text" }] };
+    localStorage.setItem(HISTORY_STORAGE_KEY, JSON.stringify([broken, sampleEntry("ok")]));
+
+    const loaded = loadHistoryEntries();
+
+    expect(loaded).toHaveLength(1);
+    expect(loaded[0]?.id).toBe("ok");
+  });
+
+  it("records が配列でないエントリは読み込まない", () => {
+    const broken = { ...sampleEntry("broken"), records: "nope" };
+    localStorage.setItem(HISTORY_STORAGE_KEY, JSON.stringify([broken]));
+
     expect(loadHistoryEntries()).toEqual([]);
   });
 });

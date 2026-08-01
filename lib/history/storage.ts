@@ -1,4 +1,4 @@
-import type { HistoryEntry } from "@/features/history/types";
+import type { HistoryEntry, HistoryRecord } from "@/features/history/types";
 
 export const HISTORY_STORAGE_KEY = "web-nfc-app.history.v1";
 export const HISTORY_MAX_ITEMS = 100;
@@ -30,6 +30,8 @@ export function loadHistoryEntries(): HistoryEntry[] {
 
 /**
  * 履歴を localStorage へ保存する（最大件数で切り詰め）。
+ * 容量超過やストレージ無効時は保存を諦める。呼び出し元は読取成功時の
+ * effect も含むため、例外を投げるとアプリごと落ちてしまう。
  *
  * @param entries - 履歴一覧（新しい順想定）
  */
@@ -39,7 +41,11 @@ export function saveHistoryEntries(entries: HistoryEntry[]): void {
   }
 
   const next = entries.slice(0, HISTORY_MAX_ITEMS);
-  window.localStorage.setItem(HISTORY_STORAGE_KEY, JSON.stringify(next));
+  try {
+    window.localStorage.setItem(HISTORY_STORAGE_KEY, JSON.stringify(next));
+  } catch {
+    return;
+  }
 }
 
 /**
@@ -69,6 +75,30 @@ function isHistoryEntry(value: unknown): value is HistoryEntry {
     (entry.source === "read" || entry.source === "write") &&
     typeof entry.createdAt === "string" &&
     typeof entry.serialNumber === "string" &&
-    Array.isArray(entry.records)
+    Array.isArray(entry.records) &&
+    entry.records.every(isHistoryRecord)
+  );
+}
+
+/**
+ * 未知オブジェクトが HistoryRecord か判定する。
+ * 表示側は text などが揃っている前提なので、読込時点で弾く。
+ *
+ * @param value - 判定対象
+ * @returns HistoryRecord なら true
+ */
+function isHistoryRecord(value: unknown): value is HistoryRecord {
+  if (!value || typeof value !== "object") {
+    return false;
+  }
+  const record = value as Partial<HistoryRecord>;
+  return (
+    (record.kind === "text" ||
+      record.kind === "url" ||
+      record.kind === "json" ||
+      record.kind === "unknown") &&
+    typeof record.recordType === "string" &&
+    typeof record.text === "string" &&
+    (record.mediaType === undefined || typeof record.mediaType === "string")
   );
 }

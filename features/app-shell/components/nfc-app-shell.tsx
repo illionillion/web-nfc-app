@@ -26,6 +26,12 @@ import {
   writeDraftToHistoryRecords,
 } from "@/lib/nfc/record-handoff";
 
+/** 「いまの結果」へ再表示している履歴。削除時に消せるよう元の id を持つ */
+type HistoryPreview = {
+  entryId: string;
+  result: NfcReadResult;
+};
+
 /**
  * Web NFC ツール本体のシェル。
  * 対応判定・読取・書込・消去・履歴を担当する。
@@ -45,6 +51,7 @@ export function NfcAppShell() {
     phase: writePhase,
     errorMessage: writeErrorMessage,
     isSessionActive: isWriteSessionActive,
+    writtenRecords,
     startWrite,
     cancelWrite,
   } = useNfcWrite();
@@ -58,7 +65,7 @@ export function NfcAppShell() {
   const { records, appendRecord, updateRecord, removeRecord, replaceRecords } = useWriteDraft();
   const { entries, addEntry, removeEntry, clearEntries } = useNfcHistory();
 
-  const [historyPreview, setHistoryPreview] = useState<NfcReadResult | null>(null);
+  const [historyPreview, setHistoryPreview] = useState<HistoryPreview | null>(null);
   const writeSectionRef = useRef<HTMLElement>(null);
   const previousScanPhaseRef = useRef(phase);
   const previousWritePhaseRef = useRef(writePhase);
@@ -71,7 +78,7 @@ export function NfcAppShell() {
   const nfcLocked = isScanSessionActive || isWriteSessionActive || isEraseSessionActive;
   const canWrite = !unsupported && validateWriteDraft(records) === null;
 
-  const panelResult = historyPreview ?? result;
+  const panelResult = historyPreview?.result ?? result;
   const panelPhase = historyPreview ? "success" : phase;
 
   useEffect(() => {
@@ -87,24 +94,28 @@ export function NfcAppShell() {
   }, [phase, result, addEntry]);
 
   useEffect(() => {
-    if (previousWritePhaseRef.current !== "success" && writePhase === "success") {
+    if (previousWritePhaseRef.current !== "success" && writePhase === "success" && writtenRecords) {
+      // 下書きは書込中も編集できるため、実際に書いたレコードで履歴を残す
       addEntry({
         source: "write",
-        records: writeDraftToHistoryRecords(records),
+        records: writeDraftToHistoryRecords(writtenRecords),
       });
     }
     previousWritePhaseRef.current = writePhase;
-  }, [writePhase, records, addEntry]);
+  }, [writePhase, writtenRecords, addEntry]);
 
   useEffect(() => {
     if (previousErasePhaseRef.current !== "success" && erasePhase === "success") {
+      // 消去済みのタグに対して消去前の内容を出したままにしない
+      setHistoryPreview(null);
+      resetScan();
       toast.success("消去が完了しました");
     }
     if (previousErasePhaseRef.current !== "error" && erasePhase === "error") {
       toast.error(eraseErrorMessage ?? "消去に失敗しました");
     }
     previousErasePhaseRef.current = erasePhase;
-  }, [erasePhase, eraseErrorMessage]);
+  }, [erasePhase, eraseErrorMessage, resetScan]);
 
   /**
    * 履歴または読取結果を書込下書きへ載せる。
@@ -138,10 +149,18 @@ export function NfcAppShell() {
    * @param entry - 履歴
    */
   function previewHistoryEntry(entry: HistoryEntry) {
+    // 確定済みのスキャン結果・エラーを抱えたままだと、プレビューの裏で
+    // 表示されない error が残り続けるため捨てる（実行中のスキャンは止めない）
+    if (phase !== "scanning") {
+      resetScan();
+    }
     setHistoryPreview({
-      serialNumber: entry.serialNumber,
-      records: historyRecordsToParsed(entry.records),
-      readAt: entry.createdAt,
+      entryId: entry.id,
+      result: {
+        serialNumber: entry.serialNumber,
+        records: historyRecordsToParsed(entry.records),
+        readAt: entry.createdAt,
+      },
     });
   }
 
@@ -243,7 +262,7 @@ export function NfcAppShell() {
         <ReadResultPanel
           key={
             historyPreview
-              ? `history-${historyPreview.readAt}`
+              ? `history-${historyPreview.entryId}`
               : phase === "success" && result
                 ? result.readAt
                 : phase
@@ -297,12 +316,16 @@ export function NfcAppShell() {
           onRemove={(entry) => {
             const confirmed = window.confirm("この履歴を削除します。よろしいですか？");
             if (confirmed) {
+              if (historyPreview?.entryId === entry.id) {
+                setHistoryPreview(null);
+              }
               removeEntry(entry.id);
             }
           }}
           onClear={() => {
             const confirmed = window.confirm("履歴をすべて削除します。よろしいですか？");
             if (confirmed) {
+              setHistoryPreview(null);
               clearEntries();
             }
           }}
