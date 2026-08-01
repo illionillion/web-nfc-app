@@ -30,6 +30,8 @@ export function loadHistoryEntries(): HistoryEntry[] {
 
 /**
  * 履歴を localStorage へ保存する（最大件数で切り詰め）。
+ * 容量超過やストレージ無効時は保存を諦める。呼び出し元は読取成功時の
+ * effect も含むため、例外を投げるとアプリごと落ちてしまう。
  *
  * @param entries - 履歴一覧（新しい順想定）
  */
@@ -39,7 +41,11 @@ export function saveHistoryEntries(entries: HistoryEntry[]): void {
   }
 
   const next = entries.slice(0, HISTORY_MAX_ITEMS);
-  window.localStorage.setItem(HISTORY_STORAGE_KEY, JSON.stringify(next));
+  try {
+    window.localStorage.setItem(HISTORY_STORAGE_KEY, JSON.stringify(next));
+  } catch {
+    return;
+  }
 }
 
 /**

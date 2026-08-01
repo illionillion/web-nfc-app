@@ -72,6 +72,19 @@ describe("history storage", () => {
     expect(next.at(-1)?.id).toBe(`old-${HISTORY_MAX_ITEMS - 2}`);
   });
 
+  it("保存が例外を投げても呼び出し元へ伝播しない", () => {
+    vi.stubGlobal("localStorage", {
+      getItem: () => null,
+      setItem: () => {
+        throw new DOMException("quota", "QuotaExceededError");
+      },
+      removeItem: () => {},
+      clear: () => {},
+    });
+
+    expect(() => saveHistoryEntries([sampleEntry("a")])).not.toThrow();
+  });
+
   it("壊れた JSON は空配列になる", () => {
     localStorage.setItem(HISTORY_STORAGE_KEY, "{not-json");
     expect(loadHistoryEntries()).toEqual([]);

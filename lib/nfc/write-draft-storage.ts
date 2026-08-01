@@ -29,6 +29,7 @@ export function loadWriteDraftRecords(): WriteDraftRecord[] {
 
 /**
  * 書込下書きを localStorage へ保存する。
+ * 容量超過やストレージ無効時は保存を諦め、編集操作は続行できるようにする。
  *
  * @param records - 下書きレコード
  */
@@ -36,7 +37,12 @@ export function saveWriteDraftRecords(records: WriteDraftRecord[]): void {
   if (typeof window === "undefined") {
     return;
   }
-  window.localStorage.setItem(WRITE_DRAFT_STORAGE_KEY, JSON.stringify(records));
+
+  try {
+    window.localStorage.setItem(WRITE_DRAFT_STORAGE_KEY, JSON.stringify(records));
+  } catch {
+    return;
+  }
 }
 
 /**
