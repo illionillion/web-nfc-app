@@ -7,7 +7,9 @@ type ActionBarProps = {
   isScanning?: boolean;
   /** 書込中か（キャンセル表示） */
   isWriting?: boolean;
-  /** scan/write の promise 未完了など、NFC 操作をロックするか */
+  /** 消去中か（キャンセル表示） */
+  isErasing?: boolean;
+  /** scan/write/erase の promise 未完了など、NFC 操作をロックするか */
   nfcLocked?: boolean;
   /** 書き込み可能か（下書きが妥当なときなど） */
   canWrite?: boolean;
@@ -19,24 +21,30 @@ type ActionBarProps = {
   onWrite?: () => void;
   /** 書込キャンセル */
   onCancelWrite?: () => void;
+  /** 消去開始 */
+  onErase?: () => void;
+  /** 消去キャンセル */
+  onCancelErase?: () => void;
 };
 
 /**
  * スキャン / 書き込み / 消去の操作ボタン。
- * 消去の本実装は後続 Issue。
  */
 export function ActionBar({
   disabled,
   isScanning = false,
   isWriting = false,
+  isErasing = false,
   nfcLocked = false,
   canWrite = false,
   onScan,
   onCancelScan,
   onWrite,
   onCancelWrite,
+  onErase,
+  onCancelErase,
 }: ActionBarProps) {
-  const busy = isScanning || isWriting || nfcLocked;
+  const busy = isScanning || isWriting || isErasing || nfcLocked;
 
   return (
     <div className={clsx(["flex", "flex-wrap", "gap-2"])} role="group" aria-label="NFC 操作">
@@ -58,7 +66,15 @@ export function ActionBar({
           書き込む
         </ActionButton>
       )}
-      <ActionButton disabled>消去</ActionButton>
+      {isErasing ? (
+        <ActionButton disabled={!onCancelErase} onClick={onCancelErase}>
+          消去キャンセル
+        </ActionButton>
+      ) : (
+        <ActionButton disabled={disabled || busy || !onErase} onClick={onErase}>
+          消去
+        </ActionButton>
+      )}
     </div>
   );
 }

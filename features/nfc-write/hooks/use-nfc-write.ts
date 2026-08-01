@@ -11,6 +11,8 @@ type UseNfcWriteResult = {
   errorMessage: string | null;
   /** write() の promise が終わるまで true */
   isSessionActive: boolean;
+  /** 直近の成功でタグへ書いたレコード。下書きの後編集に影響されない */
+  writtenRecords: WriteDraftRecord[] | null;
   startWrite: (records: WriteDraftRecord[]) => Promise<void>;
   cancelWrite: () => void;
 };
@@ -24,6 +26,7 @@ export function useNfcWrite(): UseNfcWriteResult {
   const [phase, setPhase] = useState<NfcWritePhase>("idle");
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [isSessionActive, setIsSessionActive] = useState(false);
+  const [writtenRecords, setWrittenRecords] = useState<WriteDraftRecord[] | null>(null);
   const abortRef = useRef<AbortController | null>(null);
   const completedRef = useRef(false);
   const attemptIdRef = useRef(0);
@@ -78,6 +81,7 @@ export function useNfcWrite(): UseNfcWriteResult {
         }
 
         completedRef.current = true;
+        setWrittenRecords(records);
         setPhase("success");
         setErrorMessage(null);
         abortRef.current = null;
@@ -119,6 +123,7 @@ export function useNfcWrite(): UseNfcWriteResult {
     phase,
     errorMessage,
     isSessionActive,
+    writtenRecords,
     startWrite,
     cancelWrite,
   };

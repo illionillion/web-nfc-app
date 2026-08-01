@@ -171,6 +171,69 @@ describe("useNfcScan", () => {
     expect(result.current.result).toBeNull();
   });
 
+  it("resetScan で結果を捨てて idle に戻る", async () => {
+    const { result } = renderHook(() => useNfcScan());
+
+    await act(async () => {
+      void result.current.startScan();
+    });
+
+    await waitFor(() => {
+      expect(readers).toHaveLength(1);
+    });
+
+    const readingEvent = new Event("reading");
+    Object.assign(readingEvent, {
+      serialNumber: "44:55",
+      message: {
+        records: [
+          {
+            recordType: "text",
+            data: toDataView("reset-me"),
+          },
+        ],
+      },
+    });
+
+    await act(async () => {
+      readers[0]?.dispatchEvent(readingEvent);
+    });
+
+    await waitFor(() => {
+      expect(result.current.phase).toBe("success");
+    });
+
+    await act(async () => {
+      result.current.resetScan();
+    });
+
+    expect(result.current.phase).toBe("idle");
+    expect(result.current.result).toBeNull();
+    expect(result.current.errorMessage).toBeNull();
+  });
+
+  it("スキャン中に resetScan しても cancelled にならない", async () => {
+    const { result } = renderHook(() => useNfcScan());
+
+    await act(async () => {
+      void result.current.startScan();
+    });
+
+    await waitFor(() => {
+      expect(result.current.phase).toBe("scanning");
+    });
+
+    await act(async () => {
+      result.current.resetScan();
+    });
+
+    await waitFor(() => {
+      expect(result.current.isSessionActive).toBe(false);
+    });
+
+    expect(result.current.phase).toBe("idle");
+  });
+
   it("readingerror で error になる", async () => {
     const { result } = renderHook(() => useNfcScan());
 

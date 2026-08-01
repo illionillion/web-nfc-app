@@ -9,6 +9,7 @@ type DraftHandlers = {
   onAppend: (record: WriteDraftRecord) => void;
   onUpdate: (record: WriteDraftRecord) => void;
   onRemove: (id: string) => void;
+  onClearAll: () => void;
 };
 
 /**
@@ -25,6 +26,7 @@ function createProps(overrides: Partial<{ records: WriteDraftRecord[] } & DraftH
     onAppend: overrides.onAppend ?? vi.fn<(record: WriteDraftRecord) => void>(),
     onUpdate: overrides.onUpdate ?? vi.fn<(record: WriteDraftRecord) => void>(),
     onRemove: overrides.onRemove ?? vi.fn<(id: string) => void>(),
+    onClearAll: overrides.onClearAll ?? vi.fn<() => void>(),
   };
 }
 
@@ -94,5 +96,29 @@ describe("WriteDraftPanel", () => {
     expect(
       screen.getByText("有効な URL（https://... など）を入力してください。")
     ).toBeInTheDocument();
+  });
+
+  it("下書きが空のときはクリアできない", () => {
+    render(<WriteDraftPanel {...createProps()} />);
+
+    expect(screen.getByRole("button", { name: "下書きをクリア" })).toBeDisabled();
+  });
+
+  it("下書きをクリアで onClearAll する", async () => {
+    const user = userEvent.setup();
+    const onClearAll = vi.fn();
+
+    render(
+      <WriteDraftPanel
+        {...createProps({
+          records: [{ id: "r1", kind: "text", value: "hello" }],
+          onClearAll,
+        })}
+      />
+    );
+
+    await user.click(screen.getByRole("button", { name: "下書きをクリア" }));
+
+    expect(onClearAll).toHaveBeenCalledTimes(1);
   });
 });
