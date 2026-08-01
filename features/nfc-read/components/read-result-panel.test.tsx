@@ -115,4 +115,28 @@ describe("ReadResultPanel", () => {
     expect(toast.success).toHaveBeenCalledWith("コピーしました");
     expect(screen.queryByText("コピーしました")).not.toBeInTheDocument();
   });
+
+  it("onReset 未指定ならクリアボタンを出さない", () => {
+    render(<ReadResultPanel phase="success" result={sampleResult} errorMessage={null} />);
+
+    expect(screen.queryByRole("button", { name: "結果をクリア" })).not.toBeInTheDocument();
+  });
+
+  it("結果をクリアで onReset する", async () => {
+    const user = userEvent.setup();
+    const onReset = vi.fn();
+
+    render(
+      <ReadResultPanel
+        phase="success"
+        result={sampleResult}
+        errorMessage={null}
+        onReset={onReset}
+      />
+    );
+
+    await user.click(screen.getByRole("button", { name: "結果をクリア" }));
+
+    expect(onReset).toHaveBeenCalledTimes(1);
+  });
 });

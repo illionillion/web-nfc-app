@@ -12,6 +12,7 @@ type UseNfcHistoryResult = {
     serialNumber?: string;
     records: HistoryRecord[];
   }) => void;
+  removeEntry: (id: string) => void;
   clearEntries: () => void;
 };
 
@@ -70,6 +71,14 @@ export function useNfcHistory(): UseNfcHistoryResult {
     [commit]
   );
 
+  const removeEntry = useCallback(
+    (id: string) => {
+      const current = cacheRef.current ?? loadHistoryEntries();
+      commit(current.filter((entry) => entry.id !== id));
+    },
+    [commit]
+  );
+
   const clearEntries = useCallback(() => {
     commit([]);
   }, [commit]);
@@ -77,6 +86,7 @@ export function useNfcHistory(): UseNfcHistoryResult {
   return {
     entries,
     addEntry,
+    removeEntry,
     clearEntries,
   };
 }

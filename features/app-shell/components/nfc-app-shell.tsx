@@ -39,6 +39,7 @@ export function NfcAppShell() {
     isSessionActive: isScanSessionActive,
     startScan,
     cancelScan,
+    resetScan,
   } = useNfcScan();
   const {
     phase: writePhase,
@@ -55,7 +56,7 @@ export function NfcAppShell() {
     cancelErase,
   } = useNfcErase();
   const { records, appendRecord, updateRecord, removeRecord, replaceRecords } = useWriteDraft();
-  const { entries, addEntry, clearEntries } = useNfcHistory();
+  const { entries, addEntry, removeEntry, clearEntries } = useNfcHistory();
 
   const [historyPreview, setHistoryPreview] = useState<NfcReadResult | null>(null);
   const previousScanPhaseRef = useRef(phase);
@@ -225,6 +226,10 @@ export function NfcAppShell() {
           onWriteThis={(current) => {
             applyWriteThis(parsedRecordsToWriteDraft(current.records));
           }}
+          onReset={() => {
+            setHistoryPreview(null);
+            resetScan();
+          }}
         />
       </ShellSection>
 
@@ -239,6 +244,14 @@ export function NfcAppShell() {
           onAppend={appendRecord}
           onUpdate={(next) => updateRecord(next.id, { kind: next.kind, value: next.value })}
           onRemove={removeRecord}
+          onClearAll={() => {
+            const confirmed = window.confirm(
+              "書込内容の下書きをすべて削除します。よろしいですか？"
+            );
+            if (confirmed) {
+              replaceRecords([]);
+            }
+          }}
         />
       </ShellSection>
 
@@ -251,6 +264,9 @@ export function NfcAppShell() {
           onPreview={previewHistoryEntry}
           onWriteThis={(entry) => {
             applyWriteThis(historyRecordsToWriteDraft(entry.records));
+          }}
+          onRemove={(entry) => {
+            removeEntry(entry.id);
           }}
           onClear={() => {
             const confirmed = window.confirm("履歴をすべて削除します。よろしいですか？");

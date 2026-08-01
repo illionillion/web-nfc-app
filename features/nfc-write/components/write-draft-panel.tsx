@@ -19,6 +19,7 @@ type WriteDraftPanelProps = {
   onAppend: (record: WriteDraftRecord) => void;
   onUpdate: (record: WriteDraftRecord) => void;
   onRemove: (id: string) => void;
+  onClearAll: () => void;
 };
 
 type EditorState = {
@@ -37,6 +38,7 @@ export function WriteDraftPanel({
   onAppend,
   onUpdate,
   onRemove,
+  onClearAll,
 }: WriteDraftPanelProps) {
   const [editor, setEditor] = useState<EditorState | null>(null);
   const draftIssue = validateWriteDraft(records);
@@ -77,6 +79,26 @@ export function WriteDraftPanel({
             {getWriteRecordKindLabel(kind)} を追加
           </button>
         ))}
+        <button
+          type="button"
+          disabled={records.length === 0}
+          className={clsx([
+            "min-h-11",
+            "rounded-md",
+            "border",
+            "border-zinc-300",
+            "bg-white",
+            "px-3",
+            "text-sm",
+            "font-medium",
+            "text-red-700",
+            "disabled:cursor-not-allowed",
+            "disabled:opacity-40",
+          ])}
+          onClick={onClearAll}
+        >
+          下書きをクリア
+        </button>
       </div>
 
       {records.length === 0 ? (

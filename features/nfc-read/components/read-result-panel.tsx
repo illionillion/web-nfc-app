@@ -15,6 +15,8 @@ type ReadResultPanelProps = {
   errorMessage: string | null;
   /** 「この内容で書く」ハンドラ。未指定ならボタン非表示 */
   onWriteThis?: (result: NfcReadResult) => void;
+  /** 表示中の結果を消すハンドラ。未指定ならボタン非表示 */
+  onReset?: () => void;
 };
 
 /**
@@ -25,6 +27,7 @@ export function ReadResultPanel({
   result,
   errorMessage,
   onWriteThis,
+  onReset,
 }: ReadResultPanelProps) {
   if (phase === "scanning") {
     return <StatusText>スキャン中です。タグをかざしてください。</StatusText>;
@@ -120,6 +123,26 @@ export function ReadResultPanel({
             onClick={() => onWriteThis(result)}
           >
             この内容で書く
+          </button>
+        ) : null}
+        {onReset ? (
+          <button
+            type="button"
+            className={clsx([
+              "min-h-11",
+              "rounded-md",
+              "border",
+              "border-zinc-300",
+              "bg-white",
+              "px-4",
+              "py-2",
+              "text-sm",
+              "font-medium",
+              "text-red-700",
+            ])}
+            onClick={onReset}
+          >
+            結果をクリア
           </button>
         ) : null}
       </div>

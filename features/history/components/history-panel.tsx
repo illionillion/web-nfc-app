@@ -8,13 +8,20 @@ type HistoryPanelProps = {
   entries: HistoryEntry[];
   onPreview: (entry: HistoryEntry) => void;
   onWriteThis: (entry: HistoryEntry) => void;
+  onRemove: (entry: HistoryEntry) => void;
   onClear: () => void;
 };
 
 /**
  * 読取・書込履歴の一覧。
  */
-export function HistoryPanel({ entries, onPreview, onWriteThis, onClear }: HistoryPanelProps) {
+export function HistoryPanel({
+  entries,
+  onPreview,
+  onWriteThis,
+  onRemove,
+  onClear,
+}: HistoryPanelProps) {
   if (entries.length === 0) {
     return (
       <p
@@ -58,7 +65,7 @@ export function HistoryPanel({ entries, onPreview, onWriteThis, onClear }: Histo
         </button>
       </div>
       <ul className={clsx(["space-y-3"])}>
-        {entries.map((entry) => (
+        {entries.map((entry, index) => (
           <li key={entry.id}>
             <article
               className={clsx([
@@ -115,6 +122,24 @@ export function HistoryPanel({ entries, onPreview, onWriteThis, onClear }: Histo
                   onClick={() => onWriteThis(entry)}
                 >
                   この内容で書く
+                </button>
+                <button
+                  type="button"
+                  aria-label={`履歴 ${index + 1} を削除`}
+                  className={clsx([
+                    "rounded-md",
+                    "border",
+                    "border-zinc-300",
+                    "bg-white",
+                    "px-3",
+                    "py-1.5",
+                    "text-xs",
+                    "font-medium",
+                    "text-red-700",
+                  ])}
+                  onClick={() => onRemove(entry)}
+                >
+                  削除
                 </button>
               </div>
             </article>

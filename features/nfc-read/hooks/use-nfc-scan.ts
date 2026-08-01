@@ -19,6 +19,8 @@ type UseNfcScanResult = {
   isSessionActive: boolean;
   startScan: () => Promise<void>;
   cancelScan: () => void;
+  /** 読取結果とエラーを捨てて未読取の状態へ戻す */
+  resetScan: () => void;
 };
 
 /**
@@ -39,6 +41,15 @@ export function useNfcScan(): UseNfcScanResult {
     abortRef.current?.abort();
     abortRef.current = null;
   }, []);
+
+  const resetScan = useCallback(() => {
+    // 進行中の scan があっても、abort を cancelled として報告させない
+    completedRef.current = true;
+    cancelScan();
+    setPhase("idle");
+    setResult(null);
+    setErrorMessage(null);
+  }, [cancelScan]);
 
   const startScan = useCallback(async () => {
     if (!isNdefReaderAvailable()) {
@@ -132,6 +143,7 @@ export function useNfcScan(): UseNfcScanResult {
     isSessionActive,
     startScan,
     cancelScan,
+    resetScan,
   };
 }
 
