@@ -89,4 +89,21 @@ describe("history storage", () => {
     localStorage.setItem(HISTORY_STORAGE_KEY, "{not-json");
     expect(loadHistoryEntries()).toEqual([]);
   });
+
+  it("records の中身が壊れたエントリは読み込まない", () => {
+    const broken = { ...sampleEntry("broken"), records: [{ kind: "text", recordType: "text" }] };
+    localStorage.setItem(HISTORY_STORAGE_KEY, JSON.stringify([broken, sampleEntry("ok")]));
+
+    const loaded = loadHistoryEntries();
+
+    expect(loaded).toHaveLength(1);
+    expect(loaded[0]?.id).toBe("ok");
+  });
+
+  it("records が配列でないエントリは読み込まない", () => {
+    const broken = { ...sampleEntry("broken"), records: "nope" };
+    localStorage.setItem(HISTORY_STORAGE_KEY, JSON.stringify([broken]));
+
+    expect(loadHistoryEntries()).toEqual([]);
+  });
 });

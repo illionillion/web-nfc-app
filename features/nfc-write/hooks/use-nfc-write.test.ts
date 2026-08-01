@@ -121,6 +121,47 @@ describe("useNfcWrite", () => {
 
     expect(result.current.isSessionActive).toBe(false);
     expect(result.current.errorMessage).toBeNull();
+    expect(result.current.writtenRecords).toEqual(sampleRecords);
+  });
+
+  it("成功していない試行は writtenRecords を上書きしない", async () => {
+    const { result } = renderHook(() => useNfcWrite());
+
+    expect(result.current.writtenRecords).toBeNull();
+
+    await act(async () => {
+      void result.current.startWrite(sampleRecords);
+    });
+
+    await waitFor(() => {
+      expect(writeCalls).toHaveLength(1);
+    });
+
+    await act(async () => {
+      writeCalls[0]?.resolve();
+    });
+
+    await waitFor(() => {
+      expect(result.current.phase).toBe("success");
+    });
+
+    await act(async () => {
+      void result.current.startWrite([{ id: "r2", kind: "text", value: "not-written-yet" }]);
+    });
+
+    await waitFor(() => {
+      expect(result.current.phase).toBe("writing");
+    });
+
+    await act(async () => {
+      result.current.cancelWrite();
+    });
+
+    await waitFor(() => {
+      expect(result.current.phase).toBe("cancelled");
+    });
+
+    expect(result.current.writtenRecords).toEqual(sampleRecords);
   });
 
   it("write 失敗で error になる", async () => {
