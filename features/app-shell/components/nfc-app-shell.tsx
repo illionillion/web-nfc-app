@@ -59,6 +59,7 @@ export function NfcAppShell() {
   const { entries, addEntry, removeEntry, clearEntries } = useNfcHistory();
 
   const [historyPreview, setHistoryPreview] = useState<NfcReadResult | null>(null);
+  const writeSectionRef = useRef<HTMLElement>(null);
   const previousScanPhaseRef = useRef(phase);
   const previousWritePhaseRef = useRef(writePhase);
   const previousErasePhaseRef = useRef(erasePhase);
@@ -117,6 +118,18 @@ export function NfcAppShell() {
     }
     replaceRecords(nextRecords);
     toast.success("書込内容に引き継ぎました");
+    scrollToWriteSection();
+  }
+
+  /**
+   * 引き継ぎ先が見えるよう書込セクションまでスクロールする。
+   */
+  function scrollToWriteSection() {
+    const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    writeSectionRef.current?.scrollIntoView({
+      behavior: prefersReducedMotion ? "auto" : "smooth",
+      block: "start",
+    });
   }
 
   /**
@@ -164,6 +177,21 @@ export function NfcAppShell() {
           </p>
         </div>
         <NfcSupportBanner status={support} />
+      </header>
+
+      <div
+        className={clsx([
+          "sticky",
+          "top-14",
+          "z-40",
+          "-mx-4",
+          "border-b",
+          "border-zinc-200",
+          "bg-white",
+          "px-4",
+          "py-3",
+        ])}
+      >
         <ActionBar
           disabled={unsupported}
           isScanning={isScanning}
@@ -209,7 +237,7 @@ export function NfcAppShell() {
           }
           onCancelErase={cancelErase}
         />
-      </header>
+      </div>
 
       <ShellSection title="いまの結果" description="スキャンしたタグの内容がここに表示されます。">
         <ReadResultPanel
@@ -234,6 +262,7 @@ export function NfcAppShell() {
       </ShellSection>
 
       <ShellSection
+        ref={writeSectionRef}
         title="書込内容"
         description="text / url / json レコードを追加・編集してからタグへ書き込みます。下書きは端末内に保存されます。"
       >
