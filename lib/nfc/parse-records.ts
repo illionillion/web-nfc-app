@@ -67,12 +67,13 @@ export function parseNdefRecord(record: NDEFRecord): ParsedNdefRecord {
 
 /**
  * NDEFMessage のレコード一覧を変換する。
+ * 消去済みタグが持つ empty レコードは中身が無いため除外する。
  *
  * @param records - NDEF レコード配列
  * @returns 正規化済みレコード配列
  */
 export function parseNdefRecords(records: ReadonlyArray<NDEFRecord>): ParsedNdefRecord[] {
-  return records.map(parseNdefRecord);
+  return records.filter((record) => record.recordType !== "empty").map(parseNdefRecord);
 }
 
 /**

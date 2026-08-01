@@ -113,7 +113,7 @@ describe("parseNdefRecord", () => {
   it("data が無い未知レコードはフォールバック文言になる", () => {
     const parsed = parseNdefRecord(
       createRecord({
-        recordType: "empty",
+        recordType: "absolute-url",
       })
     );
 
@@ -130,6 +130,12 @@ describe("parseNdefRecords", () => {
     ]);
 
     expect(parsed.map((record) => record.kind)).toEqual(["text", "url"]);
+  });
+
+  it("消去済みタグの empty レコードは除外する", () => {
+    const parsed = parseNdefRecords([createRecord({ recordType: "empty" })]);
+
+    expect(parsed).toEqual([]);
   });
 });
 

@@ -78,7 +78,7 @@ describe("useNfcErase", () => {
     expect(writeCalls).toHaveLength(0);
   });
 
-  it("空 NDEF で上書きして success になる", async () => {
+  it("空レコード 1 件で上書きして success になる", async () => {
     const { result } = renderHook(() => useNfcErase());
 
     await act(async () => {
@@ -90,7 +90,7 @@ describe("useNfcErase", () => {
       expect(writeCalls).toHaveLength(1);
     });
 
-    expect(writeCalls[0]?.message).toEqual({ records: [] });
+    expect(writeCalls[0]?.message).toEqual({ records: [{ recordType: "empty" }] });
     expect(writeCalls[0]?.options?.overwrite).toBe(true);
 
     await act(async () => {

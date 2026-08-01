@@ -14,7 +14,7 @@ type UseNfcEraseResult = {
 };
 
 /**
- * 空 NDEF メッセージによるタグ消去 hook。
+ * 空レコードの上書きによるタグ消去 hook。
  *
  * @returns 消去状態と操作
  */
@@ -55,7 +55,9 @@ export function useNfcErase(): UseNfcEraseResult {
     try {
       const reader = new NDEFReader();
       await reader.write(
-        { records: [] },
+        // Chrome は records が空の NDEFMessageInit を TypeError で拒否するため、
+        // 消去は空レコード 1 件の上書きで表現する。
+        { records: [{ recordType: "empty" }] },
         {
           overwrite: true,
           signal: controller.signal,
