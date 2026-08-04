@@ -9,6 +9,9 @@
     "dev:https": "next dev --experimental-https --hostname 0.0.0.0",
     "build": "next build",
     "start": "next start",
+    "cf:build": "opennextjs-cloudflare build",
+    "cf:deploy": "opennextjs-cloudflare deploy",
+    "cf:preview": "opennextjs-cloudflare build && opennextjs-cloudflare preview",
     "lint": "eslint",
     "type-check": "tsc --noEmit",
     "format": "prettier --write .",
@@ -19,11 +22,12 @@
     "prepare": "lefthook install"
   },
   "dependencies": {
+    "@opennextjs/cloudflare": "^1.20.2",
     "@uiw/react-textarea-code-editor": "^3.1.1",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "lucide-react": "^1.26.0",
-    "next": "16.2.10",
+    "next": "16.2.12",
     "react": "19.2.4",
     "react-dom": "19.2.4",
     "sonner": "^2.0.7"
@@ -41,13 +45,14 @@
     "@vitejs/plugin-react": "^6.0.4",
     "@vitest/eslint-plugin": "^1.6.24",
     "eslint": "^9",
-    "eslint-config-next": "16.2.10",
+    "eslint-config-next": "16.2.12",
     "eslint-plugin-testing-library": "^7.16.2",
     "jsdom": "^29.1.1",
     "lefthook": "^2.1.6",
     "prettier": "^3.8.3",
     "tailwindcss": "^4",
     "typescript": "^5",
-    "vitest": "^4.1.10"
+    "vitest": "^4.1.10",
+    "wrangler": "^4.118.0"
   }
 }
