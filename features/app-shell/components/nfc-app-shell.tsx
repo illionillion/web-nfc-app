@@ -136,7 +136,8 @@ export function NfcAppShell() {
    * 引き継ぎ先が見えるよう書込セクションまでスクロールする。
    */
   function scrollToWriteSection() {
-    const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    const prefersReducedMotion =
+      window.matchMedia?.("(prefers-reduced-motion: reduce)").matches ?? false;
     writeSectionRef.current?.scrollIntoView({
       behavior: prefersReducedMotion ? "auto" : "smooth",
       block: "start",
