@@ -137,7 +137,7 @@ export function NfcAppShell() {
    */
   function scrollToWriteSection() {
     const prefersReducedMotion =
-      window.matchMedia?.("(prefers-reduced-motion: reduce)").matches ?? false;
+      window.matchMedia?.("(prefers-reduced-motion: reduce)")?.matches ?? false;
     writeSectionRef.current?.scrollIntoView({
       behavior: prefersReducedMotion ? "auto" : "smooth",
       block: "start",
