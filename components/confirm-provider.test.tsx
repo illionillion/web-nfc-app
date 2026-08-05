@@ -1,4 +1,4 @@
-import { render, screen, waitFor } from "@testing-library/react";
+import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { beforeEach, describe, expect, it } from "vitest";
 
@@ -93,6 +93,31 @@ describe("ConfirmProvider", () => {
 
     // jsdom では Escape が cancel を発火しないことがあるため、仕様どおり cancel を送る
     dialog.dispatchEvent(new Event("cancel", { bubbles: true, cancelable: true }));
+
+    await waitFor(() => {
+      expect(document.body.dataset.lastConfirm).toBe("cancel");
+      expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
+    });
+  });
+
+  it("オーバーレイ（dialog 本体）クリックでキャンセルする", async () => {
+    const user = userEvent.setup();
+    render(
+      <ConfirmProvider>
+        <ConfirmHarness />
+      </ConfirmProvider>
+    );
+
+    await user.click(screen.getByRole("button", { name: "開く" }));
+    const dialog = screen.getByRole("dialog");
+
+    // 内容クリックでは閉じない
+    await user.click(screen.getByText("削除しますか？"));
+    expect(screen.getByRole("dialog")).toBeInTheDocument();
+
+    // userEvent は子要素をヒットするため、dialog 自身を target にする fireEvent を使う
+    // eslint-disable-next-line testing-library/prefer-user-event -- backdrop 相当の target を dialog 自身にする必要がある
+    fireEvent.click(dialog);
 
     await waitFor(() => {
       expect(document.body.dataset.lastConfirm).toBe("cancel");

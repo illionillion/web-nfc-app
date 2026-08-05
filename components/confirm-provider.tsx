@@ -47,7 +47,9 @@ function ConfirmDialogView({ message, onClose }: ConfirmDialogViewProps) {
       return;
     }
 
-    dialog.showModal();
+    if (!dialog.open) {
+      dialog.showModal();
+    }
     cancelButtonRef.current?.focus();
 
     const onCancel = (event: Event) => {
@@ -57,7 +59,9 @@ function ConfirmDialogView({ message, onClose }: ConfirmDialogViewProps) {
     dialog.addEventListener("cancel", onCancel);
     return () => {
       dialog.removeEventListener("cancel", onCancel);
-      dialog.close();
+      if (dialog.open) {
+        dialog.close();
+      }
       dialog.removeAttribute("open");
     };
   }, [onClose]);
@@ -65,6 +69,7 @@ function ConfirmDialogView({ message, onClose }: ConfirmDialogViewProps) {
   return (
     <dialog
       ref={dialogRef}
+      role="dialog"
       aria-modal="true"
       aria-labelledby={messageId}
       className={clsx([
