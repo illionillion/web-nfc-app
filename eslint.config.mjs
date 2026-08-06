@@ -16,9 +16,6 @@ const eslintConfig = defineConfig([
     "next-env.d.ts",
     // Test coverage output
     "coverage/**",
-    // Cloudflare / OpenNext の生成物
-    ".open-next/**",
-    ".wrangler/**",
   ]),
   {
     files: ["**/*.{test,spec}.{ts,tsx}"],
