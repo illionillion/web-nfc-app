@@ -1,6 +1,7 @@
 "use client";
 
 import { clsx } from "clsx";
+import { usePathname } from "next/navigation";
 import {
   createContext,
   useCallback,
@@ -140,8 +141,11 @@ function ConfirmDialogView({ message, onClose }: ConfirmDialogViewProps) {
  * 確認ダイアログの Provider。
  * ルートに 1 つ置き、`useConfirm().confirm(message)` で呼び出す。
  * ネイティブ `<dialog>` + `showModal()` で ESC・フォーカストラップをブラウザに任せる。
+ * ルート遷移時は開いている確認をキャンセルし、離脱後の OK で副作用が走らないようにする。
  */
 export function ConfirmProvider({ children }: ConfirmProviderProps) {
+  const pathname = usePathname();
+  const previousPathnameRef = useRef(pathname);
   const resolveRef = useRef<((value: boolean) => void) | null>(null);
   const [message, setMessage] = useState<string | null>(null);
 
@@ -163,6 +167,23 @@ export function ConfirmProvider({ children }: ConfirmProviderProps) {
       setMessage(nextMessage);
     });
   }, []);
+
+  useEffect(() => {
+    if (previousPathnameRef.current === pathname) {
+      return;
+    }
+    previousPathnameRef.current = pathname;
+
+    if (!resolveRef.current) {
+      return;
+    }
+
+    // ルート離脱後に OK されてもシェルの副作用が走らないようキャンセルする。
+    // setState は effect 同期内で呼ばない（react-hooks/set-state-in-effect）。
+    queueMicrotask(() => {
+      close(false);
+    });
+  }, [pathname, close]);
 
   return (
     <ConfirmContext.Provider value={{ confirm }}>

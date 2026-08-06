@@ -1,6 +1,13 @@
 import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { beforeEach, describe, expect, it } from "vitest";
+import { useState, type ReactNode } from "react";
+import { beforeEach, describe, expect, it, vi } from "vitest";
+
+const pathnameState = { value: "/app" };
+
+vi.mock("next/navigation", () => ({
+  usePathname: () => pathnameState.value,
+}));
 
 import { ConfirmProvider, useConfirm } from "@/components/confirm-provider";
 
@@ -26,9 +33,32 @@ function ConfirmHarness() {
   );
 }
 
+/**
+ * テスト内で pathname を変えて ConfirmProvider を再描画する。
+ */
+function PathnameProbe({ children }: { children: ReactNode }) {
+  const [, setTick] = useState(0);
+
+  return (
+    <div>
+      <button
+        type="button"
+        onClick={() => {
+          pathnameState.value = "/";
+          setTick((tick) => tick + 1);
+        }}
+      >
+        ルート変更
+      </button>
+      <ConfirmProvider>{children}</ConfirmProvider>
+    </div>
+  );
+}
+
 describe("ConfirmProvider", () => {
   beforeEach(() => {
     delete document.body.dataset.lastConfirm;
+    pathnameState.value = "/app";
   });
 
   it("メッセージを表示する", async () => {
@@ -118,6 +148,25 @@ describe("ConfirmProvider", () => {
     // userEvent は子要素をヒットするため、dialog 自身を target にする fireEvent を使う
     // eslint-disable-next-line testing-library/prefer-user-event -- backdrop 相当の target を dialog 自身にする必要がある
     fireEvent.click(dialog);
+
+    await waitFor(() => {
+      expect(document.body.dataset.lastConfirm).toBe("cancel");
+      expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
+    });
+  });
+
+  it("ルート変更で開いている確認をキャンセルする", async () => {
+    const user = userEvent.setup();
+    render(
+      <PathnameProbe>
+        <ConfirmHarness />
+      </PathnameProbe>
+    );
+
+    await user.click(screen.getByRole("button", { name: "開く" }));
+    expect(screen.getByRole("dialog")).toBeInTheDocument();
+
+    await user.click(screen.getByRole("button", { name: "ルート変更" }));
 
     await waitFor(() => {
       expect(document.body.dataset.lastConfirm).toBe("cancel");
