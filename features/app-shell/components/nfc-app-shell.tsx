@@ -4,6 +4,7 @@ import { clsx } from "clsx";
 import { useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
 
+import { useConfirm } from "@/components/confirm-provider";
 import { ActionBar } from "@/features/app-shell/components/action-bar";
 import { NfcSupportBanner } from "@/features/app-shell/components/nfc-support-banner";
 import { ShellSection } from "@/features/app-shell/components/shell-section";
@@ -37,6 +38,7 @@ type HistoryPreview = {
  * 対応判定・読取・書込・消去・履歴を担当する。
  */
 export function NfcAppShell() {
+  const { confirm } = useConfirm();
   const support = useNfcSupport();
   const {
     phase,
@@ -244,15 +246,16 @@ export function NfcAppShell() {
             unsupported
               ? undefined
               : () => {
-                  const confirmed = window.confirm(
+                  void confirm(
                     "タグの内容を消去します。よろしいですか？（空の NDEF で上書きします）"
-                  );
-                  if (!confirmed) {
-                    return;
-                  }
-                  cancelScan();
-                  cancelWrite();
-                  void startErase();
+                  ).then((confirmed) => {
+                    if (!confirmed) {
+                      return;
+                    }
+                    cancelScan();
+                    cancelWrite();
+                    void startErase();
+                  });
                 }
           }
           onCancelErase={cancelErase}
@@ -294,12 +297,13 @@ export function NfcAppShell() {
           onUpdate={(next) => updateRecord(next.id, { kind: next.kind, value: next.value })}
           onRemove={removeRecord}
           onClearAll={() => {
-            const confirmed = window.confirm(
-              "書込内容の下書きをすべて削除します。よろしいですか？"
+            void confirm("書込内容の下書きをすべて削除します。よろしいですか？").then(
+              (confirmed) => {
+                if (confirmed) {
+                  replaceRecords([]);
+                }
+              }
             );
-            if (confirmed) {
-              replaceRecords([]);
-            }
           }}
         />
       </ShellSection>
@@ -315,20 +319,22 @@ export function NfcAppShell() {
             applyWriteThis(historyRecordsToWriteDraft(entry.records));
           }}
           onRemove={(entry) => {
-            const confirmed = window.confirm("この履歴を削除します。よろしいですか？");
-            if (confirmed) {
-              if (historyPreview?.entryId === entry.id) {
-                setHistoryPreview(null);
+            void confirm("この履歴を削除します。よろしいですか？").then((confirmed) => {
+              if (confirmed) {
+                if (historyPreview?.entryId === entry.id) {
+                  setHistoryPreview(null);
+                }
+                removeEntry(entry.id);
               }
-              removeEntry(entry.id);
-            }
+            });
           }}
           onClear={() => {
-            const confirmed = window.confirm("履歴をすべて削除します。よろしいですか？");
-            if (confirmed) {
-              setHistoryPreview(null);
-              clearEntries();
-            }
+            void confirm("履歴をすべて削除します。よろしいですか？").then((confirmed) => {
+              if (confirmed) {
+                setHistoryPreview(null);
+                clearEntries();
+              }
+            });
           }}
         />
       </ShellSection>
