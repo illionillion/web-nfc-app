@@ -19,50 +19,45 @@ describe("ThemeMenu", () => {
     expect(screen.getByRole("button", { name: "テーマ: ダーク" })).toBeInTheDocument();
   });
 
-  it("メニューを開くと 3 つの選択肢が出る", async () => {
+  it("開くと radiogroup に 3 つの選択肢が出る", async () => {
     const user = userEvent.setup();
     render(<ThemeMenu theme="light" />);
 
     await user.click(screen.getByRole("button", { name: "テーマ: ライト" }));
 
-    expect(screen.getByRole("menu", { name: "テーマ" })).toBeInTheDocument();
-    expect(screen.getByRole("menuitemradio", { name: "ライト" })).toHaveAttribute(
-      "aria-checked",
-      "true"
-    );
-    expect(screen.getByRole("menuitemradio", { name: "ダーク" })).toHaveAttribute(
-      "aria-checked",
-      "false"
-    );
-    expect(screen.getByRole("menuitemradio", { name: "システム" })).toHaveAttribute(
+    expect(screen.getByRole("radiogroup", { name: "テーマ" })).toBeInTheDocument();
+    expect(screen.getByRole("radio", { name: "ライト" })).toHaveAttribute("aria-checked", "true");
+    expect(screen.getByRole("radio", { name: "ダーク" })).toHaveAttribute("aria-checked", "false");
+    expect(screen.getByRole("radio", { name: "システム" })).toHaveAttribute(
       "aria-checked",
       "false"
     );
   });
 
-  it("ダークを選ぶと Cookie と html に反映する", async () => {
+  it("ダークを選ぶと Cookie と html に反映し、トリガーへフォーカスが戻る", async () => {
     const user = userEvent.setup();
     render(<ThemeMenu theme="light" />);
 
     await user.click(screen.getByRole("button", { name: "テーマ: ライト" }));
-    await user.click(screen.getByRole("menuitemradio", { name: "ダーク" }));
+    await user.click(screen.getByRole("radio", { name: "ダーク" }));
 
     expect(document.cookie).toContain(`${THEME_COOKIE_NAME}=dark`);
     expect(document.documentElement.classList.contains("dark")).toBe(true);
     expect(document.documentElement.dataset.theme).toBe("dark");
-    expect(screen.queryByRole("menu")).not.toBeInTheDocument();
-    expect(screen.getByRole("button", { name: "テーマ: ダーク" })).toBeInTheDocument();
+    expect(screen.queryByRole("radiogroup")).not.toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "テーマ: ダーク" })).toHaveFocus();
   });
 
-  it("Escape でメニューを閉じる", async () => {
+  it("Escape で閉じてトリガーへフォーカスが戻る", async () => {
     const user = userEvent.setup();
     render(<ThemeMenu theme="system" />);
 
     await user.click(screen.getByRole("button", { name: "テーマ: システム" }));
-    expect(screen.getByRole("menu")).toBeInTheDocument();
+    expect(screen.getByRole("radiogroup")).toBeInTheDocument();
 
     await user.keyboard("{Escape}");
 
-    expect(screen.queryByRole("menu")).not.toBeInTheDocument();
+    expect(screen.queryByRole("radiogroup")).not.toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "テーマ: システム" })).toHaveFocus();
   });
 });

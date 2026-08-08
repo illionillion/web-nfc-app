@@ -2,7 +2,7 @@
 
 import { clsx } from "clsx";
 import { Check, Monitor, Moon, Sun } from "lucide-react";
-import { useEffect, useId, useRef, useState } from "react";
+import { useCallback, useEffect, useId, useRef, useState } from "react";
 
 import { applyThemeToDocument } from "@/features/settings/lib/apply-theme";
 import { writeThemeCookie } from "@/features/settings/lib/theme-cookie";
@@ -59,7 +59,13 @@ export function ThemeMenu({ theme: initialTheme }: ThemeMenuProps) {
   const [theme, setTheme] = useState<ThemePreference>(initialTheme);
   const [open, setOpen] = useState(false);
   const rootRef = useRef<HTMLDivElement>(null);
+  const triggerRef = useRef<HTMLButtonElement>(null);
   const menuId = useId();
+
+  const close = useCallback(() => {
+    setOpen(false);
+    triggerRef.current?.focus();
+  }, []);
 
   useEffect(() => {
     applyThemeToDocument(theme);
@@ -90,7 +96,7 @@ export function ThemeMenu({ theme: initialTheme }: ThemeMenuProps) {
     };
     const onKeyDown = (event: KeyboardEvent) => {
       if (event.key === "Escape") {
-        setOpen(false);
+        close();
       }
     };
 
@@ -100,18 +106,19 @@ export function ThemeMenu({ theme: initialTheme }: ThemeMenuProps) {
       document.removeEventListener("pointerdown", onPointerDown);
       document.removeEventListener("keydown", onKeyDown);
     };
-  }, [open]);
+  }, [open, close]);
 
   const selectTheme = (next: ThemePreference) => {
     setTheme(next);
     writeThemeCookie(next);
     applyThemeToDocument(next);
-    setOpen(false);
+    close();
   };
 
   return (
     <div ref={rootRef} className="relative">
       <button
+        ref={triggerRef}
         type="button"
         className={clsx([
           "inline-flex",
@@ -124,7 +131,7 @@ export function ThemeMenu({ theme: initialTheme }: ThemeMenuProps) {
           "hover:text-foreground",
         ])}
         aria-label={`テーマ: ${getThemeLabel(theme)}`}
-        aria-haspopup="menu"
+        aria-haspopup="true"
         aria-expanded={open}
         aria-controls={menuId}
         onClick={() => setOpen((current) => !current)}
@@ -134,7 +141,7 @@ export function ThemeMenu({ theme: initialTheme }: ThemeMenuProps) {
       {open ? (
         <div
           id={menuId}
-          role="menu"
+          role="radiogroup"
           aria-label="テーマ"
           className={clsx([
             "absolute",
@@ -156,7 +163,7 @@ export function ThemeMenu({ theme: initialTheme }: ThemeMenuProps) {
               <button
                 key={option.value}
                 type="button"
-                role="menuitemradio"
+                role="radio"
                 aria-checked={selected}
                 className={clsx([
                   "flex",
