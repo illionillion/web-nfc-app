@@ -19,19 +19,15 @@ describe("ThemeMenu", () => {
     expect(screen.getByRole("button", { name: "テーマ: ダーク" })).toBeInTheDocument();
   });
 
-  it("開くと radiogroup に 3 つの選択肢が出る", async () => {
+  it("開くと 3 つの選択肢が出る", async () => {
     const user = userEvent.setup();
     render(<ThemeMenu theme="light" />);
 
     await user.click(screen.getByRole("button", { name: "テーマ: ライト" }));
 
-    expect(screen.getByRole("radiogroup", { name: "テーマ" })).toBeInTheDocument();
-    expect(screen.getByRole("radio", { name: "ライト" })).toHaveAttribute("aria-checked", "true");
-    expect(screen.getByRole("radio", { name: "ダーク" })).toHaveAttribute("aria-checked", "false");
-    expect(screen.getByRole("radio", { name: "システム" })).toHaveAttribute(
-      "aria-checked",
-      "false"
-    );
+    expect(screen.getByRole("button", { name: "ライト", pressed: true })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "ダーク", pressed: false })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "システム", pressed: false })).toBeInTheDocument();
   });
 
   it("ダークを選ぶと Cookie と html に反映し、トリガーへフォーカスが戻る", async () => {
@@ -39,12 +35,12 @@ describe("ThemeMenu", () => {
     render(<ThemeMenu theme="light" />);
 
     await user.click(screen.getByRole("button", { name: "テーマ: ライト" }));
-    await user.click(screen.getByRole("radio", { name: "ダーク" }));
+    await user.click(screen.getByRole("button", { name: "ダーク", pressed: false }));
 
     expect(document.cookie).toContain(`${THEME_COOKIE_NAME}=dark`);
     expect(document.documentElement.classList.contains("dark")).toBe(true);
     expect(document.documentElement.dataset.theme).toBe("dark");
-    expect(screen.queryByRole("radiogroup")).not.toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: "ライト" })).not.toBeInTheDocument();
     expect(screen.getByRole("button", { name: "テーマ: ダーク" })).toHaveFocus();
   });
 
@@ -53,11 +49,11 @@ describe("ThemeMenu", () => {
     render(<ThemeMenu theme="system" />);
 
     await user.click(screen.getByRole("button", { name: "テーマ: システム" }));
-    expect(screen.getByRole("radiogroup")).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "ライト", pressed: false })).toBeInTheDocument();
 
     await user.keyboard("{Escape}");
 
-    expect(screen.queryByRole("radiogroup")).not.toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: "ライト" })).not.toBeInTheDocument();
     expect(screen.getByRole("button", { name: "テーマ: システム" })).toHaveFocus();
   });
 });

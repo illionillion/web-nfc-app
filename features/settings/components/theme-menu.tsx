@@ -131,7 +131,6 @@ export function ThemeMenu({ theme: initialTheme }: ThemeMenuProps) {
           "hover:text-foreground",
         ])}
         aria-label={`テーマ: ${getThemeLabel(theme)}`}
-        aria-haspopup="true"
         aria-expanded={open}
         aria-controls={menuId}
         onClick={() => setOpen((current) => !current)}
@@ -141,8 +140,6 @@ export function ThemeMenu({ theme: initialTheme }: ThemeMenuProps) {
       {open ? (
         <div
           id={menuId}
-          role="radiogroup"
-          aria-label="テーマ"
           className={clsx([
             "absolute",
             "right-0",
@@ -163,8 +160,7 @@ export function ThemeMenu({ theme: initialTheme }: ThemeMenuProps) {
               <button
                 key={option.value}
                 type="button"
-                role="radio"
-                aria-checked={selected}
+                aria-pressed={selected}
                 className={clsx([
                   "flex",
                   "w-full",
