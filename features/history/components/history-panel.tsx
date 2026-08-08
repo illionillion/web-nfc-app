@@ -29,12 +29,12 @@ export function HistoryPanel({
           "rounded-md",
           "border",
           "border-dashed",
-          "border-zinc-300",
+          "border-border",
           "px-3",
           "py-6",
           "text-center",
           "text-sm",
-          "text-zinc-500",
+          "text-muted",
         ])}
       >
         履歴はまだありません
@@ -45,19 +45,20 @@ export function HistoryPanel({
   return (
     <div className={clsx(["space-y-3"])}>
       <div className={clsx(["flex", "items-center", "justify-between", "gap-2"])}>
-        <p className={clsx(["text-sm", "text-zinc-600"])}>{entries.length} 件（最大 100）</p>
+        <p className={clsx(["text-sm", "text-muted"])}>{entries.length} 件（最大 100）</p>
         <button
           type="button"
           className={clsx([
             "rounded-md",
             "border",
-            "border-zinc-300",
-            "bg-white",
+            "border-border",
+            "bg-surface",
             "px-3",
             "py-1.5",
             "text-xs",
             "font-medium",
             "text-red-700",
+            "dark:text-red-400",
           ])}
           onClick={onClear}
         >
@@ -72,20 +73,20 @@ export function HistoryPanel({
                 "space-y-2",
                 "rounded-md",
                 "border",
-                "border-zinc-200",
-                "bg-zinc-50",
+                "border-border",
+                "bg-surface",
                 "p-3",
               ])}
             >
               <header className={clsx(["space-y-1"])}>
-                <p className={clsx(["text-sm", "font-medium", "text-zinc-900"])}>
+                <p className={clsx(["text-sm", "font-medium", "text-foreground"])}>
                   {entry.source === "read" ? "読取" : "書込"} · レコード {entry.records.length}
                 </p>
-                <p className={clsx(["text-xs", "text-zinc-500"])}>
+                <p className={clsx(["text-xs", "text-muted"])}>
                   {formatDateTime(entry.createdAt)}
                   {entry.serialNumber ? ` · ${entry.serialNumber}` : ""}
                 </p>
-                <p className={clsx(["truncate", "font-mono", "text-xs", "text-zinc-700"])}>
+                <p className={clsx(["truncate", "font-mono", "text-xs", "text-foreground"])}>
                   {summarizeRecords(entry)}
                 </p>
               </header>
@@ -95,8 +96,8 @@ export function HistoryPanel({
                   className={clsx([
                     "rounded-md",
                     "border",
-                    "border-zinc-300",
-                    "bg-white",
+                    "border-border",
+                    "bg-background",
                     "px-3",
                     "py-1.5",
                     "text-xs",
@@ -111,8 +112,8 @@ export function HistoryPanel({
                   className={clsx([
                     "rounded-md",
                     "border",
-                    "border-zinc-300",
-                    "bg-white",
+                    "border-border",
+                    "bg-background",
                     "px-3",
                     "py-1.5",
                     "text-xs",
@@ -129,13 +130,14 @@ export function HistoryPanel({
                   className={clsx([
                     "rounded-md",
                     "border",
-                    "border-zinc-300",
-                    "bg-white",
+                    "border-border",
+                    "bg-background",
                     "px-3",
                     "py-1.5",
                     "text-xs",
                     "font-medium",
                     "text-red-700",
+                    "dark:text-red-400",
                   ])}
                   onClick={() => onRemove(entry)}
                 >

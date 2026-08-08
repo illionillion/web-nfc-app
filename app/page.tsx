@@ -22,20 +22,14 @@ export default function Home() {
     >
       <div className={clsx(["space-y-3"])}>
         <p
-          className={clsx([
-            "text-xs",
-            "font-medium",
-            "uppercase",
-            "tracking-wider",
-            "text-zinc-500",
-          ])}
+          className={clsx(["text-xs", "font-medium", "uppercase", "tracking-wider", "text-muted"])}
         >
           Web NFC
         </p>
         <h1 className={clsx(["text-3xl", "font-semibold", "tracking-tight"])}>
           ブラウザだけで NFC を読み書き
         </h1>
-        <p className={clsx(["text-base", "leading-7", "text-zinc-600"])}>
+        <p className={clsx(["text-base", "leading-7", "text-muted"])}>
           NDEF タグの読取・書込・消去を端末内で完結するツールです。Android Chrome と HTTPS（または
           localhost）が必要です。
         </p>
@@ -50,16 +44,16 @@ export default function Home() {
             "items-center",
             "justify-center",
             "rounded-md",
-            "bg-zinc-900",
+            "bg-foreground",
             "px-5",
             "text-sm",
             "font-medium",
-            "text-white",
+            "text-background",
           ])}
         >
           ツールを開く
         </Link>
-        <p className={clsx(["text-sm", "text-zinc-500"])}>
+        <p className={clsx(["text-sm", "text-muted"])}>
           iOS や多くの PC ブラウザでは使えません。詳細はツール画面の案内を確認してください。
         </p>
       </div>
