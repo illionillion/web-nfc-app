@@ -24,19 +24,12 @@ function getHtmlTheme(): "light" | "dark" {
 }
 
 /**
- * SSR 時のフォールバック。
- *
- * @returns light
- */
-function getServerHtmlTheme(): "light" {
-  return "light";
-}
-
-/**
  * Cookie 設定を解決したあとの実効テーマ（html の dark class）を返す。
+ * SSR / hydrate 時は RSC から渡した snapshot を使い、html の class と食い違わないようにする。
  *
+ * @param serverTheme - RSC が html に付けた light / dark（system は light 扱い）
  * @returns light または dark
  */
-export function useResolvedTheme(): "light" | "dark" {
-  return useSyncExternalStore(subscribeHtmlTheme, getHtmlTheme, getServerHtmlTheme);
+export function useResolvedTheme(serverTheme: "light" | "dark" = "light"): "light" | "dark" {
+  return useSyncExternalStore(subscribeHtmlTheme, getHtmlTheme, () => serverTheme);
 }

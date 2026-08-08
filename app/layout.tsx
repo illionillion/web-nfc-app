@@ -61,7 +61,7 @@ export default async function RootLayout({
         <ConfirmProvider>
           <SiteHeader theme={theme} />
           {children}
-          <AppToaster />
+          <AppToaster theme={isDark ? "dark" : "light"} />
         </ConfirmProvider>
       </body>
     </html>
