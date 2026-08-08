@@ -188,13 +188,13 @@ export function NfcAppShell() {
               "font-medium",
               "uppercase",
               "tracking-wider",
-              "text-zinc-500",
+              "text-muted",
             ])}
           >
             Web NFC
           </p>
           <h1 className={clsx(["text-2xl", "font-semibold", "tracking-tight"])}>読み書きツール</h1>
-          <p className={clsx(["text-sm", "text-zinc-600"])}>
+          <p className={clsx(["text-sm", "text-muted"])}>
             ブラウザだけで NDEF タグを読み書きします。モード切替ではなく、操作ボタンで進めます。
           </p>
         </div>
@@ -208,8 +208,8 @@ export function NfcAppShell() {
           "z-40",
           "-mx-4",
           "border-b",
-          "border-zinc-200",
-          "bg-white",
+          "border-border",
+          "bg-background",
           "px-4",
           "py-3",
         ])}

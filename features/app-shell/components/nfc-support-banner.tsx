@@ -11,7 +11,7 @@ type NfcSupportBannerProps = {
 export function NfcSupportBanner({ status }: NfcSupportBannerProps) {
   if (status.kind === "checking") {
     return (
-      <p className={clsx(["text-sm", "text-zinc-500"])} role="status">
+      <p className={clsx(["text-sm", "text-muted"])} role="status">
         対応状況を確認しています…
       </p>
     );
@@ -20,10 +20,12 @@ export function NfcSupportBanner({ status }: NfcSupportBannerProps) {
   if (status.kind === "supported") {
     return (
       <div className={clsx(["space-y-1"])} role="status">
-        <p className={clsx(["text-sm", "font-medium", "text-emerald-700"])}>
+        <p
+          className={clsx(["text-sm", "font-medium", "text-emerald-700", "dark:text-emerald-400"])}
+        >
           この端末は Web NFC に対応しています
         </p>
-        <p className={clsx(["text-sm", "text-zinc-600"])}>
+        <p className={clsx(["text-sm", "text-muted"])}>
           待機中 — 下の操作からスキャンや書き込みを始められます（本実装は後続）
         </p>
       </div>
@@ -39,13 +41,24 @@ export function NfcSupportBanner({ status }: NfcSupportBannerProps) {
         "border-amber-300",
         "bg-amber-50",
         "p-4",
+        "dark:border-amber-700",
+        "dark:bg-amber-950",
       ])}
       role="alert"
     >
-      <p className={clsx(["text-sm", "font-medium", "text-amber-900"])}>
+      <p className={clsx(["text-sm", "font-medium", "text-amber-900", "dark:text-amber-100"])}>
         この環境では Web NFC を使えません
       </p>
-      <ul className={clsx(["list-disc", "space-y-1", "pl-5", "text-sm", "text-amber-900"])}>
+      <ul
+        className={clsx([
+          "list-disc",
+          "space-y-1",
+          "pl-5",
+          "text-sm",
+          "text-amber-900",
+          "dark:text-amber-100",
+        ])}
+      >
         {status.reason === "insecure-context" ? (
           <li>HTTPS（または localhost）の Secure Context が必要です</li>
         ) : (
