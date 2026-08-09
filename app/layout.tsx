@@ -5,6 +5,7 @@ import { clsx } from "clsx";
 
 import { AppToaster } from "@/components/app-toaster";
 import { ConfirmProvider } from "@/components/confirm-provider";
+import { SiteFooter } from "@/components/site-footer";
 import { SiteHeader } from "@/components/site-header";
 import {
   SYSTEM_THEME_INLINE_SCRIPT,
@@ -61,6 +62,7 @@ export default async function RootLayout({
         <ConfirmProvider>
           <SiteHeader theme={theme} />
           {children}
+          <SiteFooter />
           <AppToaster theme={isDark ? "dark" : "light"} />
         </ConfirmProvider>
       </body>
