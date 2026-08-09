@@ -4,6 +4,12 @@ import { describe, expect, it } from "vitest";
 import { HomeLanding } from "@/components/home-landing";
 
 describe("HomeLanding", () => {
+  it("favicon と同じマークを中央に出す", () => {
+    const { container } = render(<HomeLanding />);
+
+    expect(container.querySelector("[data-brand-mark]")).toBeInTheDocument();
+  });
+
   it("ツールへの CTA を出す", () => {
     render(<HomeLanding />);
 

@@ -10,6 +10,10 @@
   --surface: #ffffff;
   --border: #e4e4e7;
   --muted: #71717a;
+  --mark-tile: #f4f4f5;
+  --mark-tile-stroke: #e4e4e7;
+  --mark-glyph: #171717;
+  --mark-arc: #5c6d8a;
 }
 
 .dark {
