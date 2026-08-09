@@ -1,6 +1,6 @@
 @import "tailwindcss";
 
-/* ダークモードは class 戦略のみ。html に .dark を付けない限り無効（いったんライト固定）。 */
+/* ダークモードは class 戦略。html に .dark が付いたときだけ有効。 */
 @custom-variant dark (&:where(.dark, .dark *));
 
 :root {
@@ -10,6 +10,15 @@
   --surface: #ffffff;
   --border: #e4e4e7;
   --muted: #71717a;
+}
+
+.dark {
+  color-scheme: dark;
+  --background: #0a0a0a;
+  --foreground: #ededed;
+  --surface: #18181b;
+  --border: #3f3f46;
+  --muted: #d4d4d8;
 }
 
 @theme inline {

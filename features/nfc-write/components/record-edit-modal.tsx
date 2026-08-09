@@ -68,10 +68,10 @@ export function RecordEditModal({ record, onClose, onSave }: RecordEditModalProp
         "w-[min(100%,28rem)]",
         "rounded-lg",
         "border",
-        "border-zinc-200",
-        "bg-white",
+        "border-border",
+        "bg-surface",
         "p-0",
-        "text-zinc-900",
+        "text-foreground",
         "shadow-lg",
         "backdrop:bg-zinc-900/40",
       ])}
@@ -98,7 +98,7 @@ export function RecordEditModal({ record, onClose, onSave }: RecordEditModalProp
           <h2 id={titleId} className={clsx(["text-lg", "font-semibold"])}>
             レコードを編集
           </h2>
-          <p className={clsx(["text-sm", "text-zinc-600"])}>
+          <p className={clsx(["text-sm", "text-muted"])}>
             種別ごとに入力欄が切り替わります。保存時にバリデーションします。
           </p>
         </header>
@@ -115,8 +115,8 @@ export function RecordEditModal({ record, onClose, onSave }: RecordEditModalProp
               "w-full",
               "rounded-md",
               "border",
-              "border-zinc-300",
-              "bg-white",
+              "border-border",
+              "bg-background",
               "px-3",
               "text-sm",
             ])}
@@ -146,7 +146,8 @@ export function RecordEditModal({ record, onClose, onSave }: RecordEditModalProp
                 "w-full",
                 "rounded-md",
                 "border",
-                "border-zinc-300",
+                "border-border",
+                "bg-background",
                 "px-3",
                 "py-2",
                 "text-sm",
@@ -165,7 +166,8 @@ export function RecordEditModal({ record, onClose, onSave }: RecordEditModalProp
                 "w-full",
                 "rounded-md",
                 "border",
-                "border-zinc-300",
+                "border-border",
+                "bg-background",
                 "px-3",
                 "text-sm",
               ])}
@@ -183,7 +185,7 @@ export function RecordEditModal({ record, onClose, onSave }: RecordEditModalProp
         </div>
 
         {displayError ? (
-          <p className={clsx(["text-sm", "text-red-700"])} role="alert">
+          <p className={clsx(["text-sm", "text-red-700", "dark:text-red-400"])} role="alert">
             {displayError}
           </p>
         ) : null}
@@ -195,8 +197,8 @@ export function RecordEditModal({ record, onClose, onSave }: RecordEditModalProp
               "min-h-11",
               "rounded-md",
               "border",
-              "border-zinc-300",
-              "bg-white",
+              "border-border",
+              "bg-background",
               "px-4",
               "text-sm",
               "font-medium",
@@ -212,12 +214,12 @@ export function RecordEditModal({ record, onClose, onSave }: RecordEditModalProp
               "min-h-11",
               "rounded-md",
               "border",
-              "border-zinc-900",
-              "bg-zinc-900",
+              "border-foreground",
+              "bg-foreground",
               "px-4",
               "text-sm",
               "font-medium",
-              "text-white",
+              "text-background",
               "disabled:cursor-not-allowed",
               "disabled:opacity-40",
             ])}

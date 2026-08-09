@@ -39,7 +39,7 @@ export function ReadResultPanel({
 
   if (phase === "error") {
     return (
-      <p className={clsx(["text-sm", "text-red-700"])} role="alert">
+      <p className={clsx(["text-sm", "text-red-700", "dark:text-red-400"])} role="alert">
         {errorMessage ?? "読み取りに失敗しました。"}
       </p>
     );
@@ -53,19 +53,19 @@ export function ReadResultPanel({
     <div className={clsx(["space-y-4"])}>
       <dl className={clsx(["space-y-2", "text-sm"])}>
         <div className={clsx(["space-y-1"])}>
-          <dt className={clsx(["font-medium", "text-zinc-500"])}>シリアル番号</dt>
-          <dd className={clsx(["break-all", "font-mono", "text-zinc-900"])}>
+          <dt className={clsx(["font-medium", "text-muted"])}>シリアル番号</dt>
+          <dd className={clsx(["break-all", "font-mono", "text-foreground"])}>
             {result.serialNumber || "(なし)"}
           </dd>
         </div>
         <div className={clsx(["space-y-1"])}>
-          <dt className={clsx(["font-medium", "text-zinc-500"])}>読取日時</dt>
-          <dd className={clsx(["text-zinc-900"])}>{formatReadAt(result.readAt)}</dd>
+          <dt className={clsx(["font-medium", "text-muted"])}>読取日時</dt>
+          <dd className={clsx(["text-foreground"])}>{formatReadAt(result.readAt)}</dd>
         </div>
       </dl>
 
       <div className={clsx(["space-y-2"])}>
-        <p className={clsx(["text-sm", "font-medium", "text-zinc-500"])}>
+        <p className={clsx(["text-sm", "font-medium", "text-muted"])}>
           レコード（{result.records.length}）
         </p>
         {result.records.length === 0 ? (
@@ -88,13 +88,13 @@ export function ReadResultPanel({
             "min-h-11",
             "rounded-md",
             "border",
-            "border-zinc-300",
-            "bg-white",
+            "border-border",
+            "bg-surface",
             "px-4",
             "py-2",
             "text-sm",
             "font-medium",
-            "text-zinc-900",
+            "text-foreground",
           ])}
           onClick={() => {
             void copyTextToClipboard(formatReadResultForClipboard(result));
@@ -109,13 +109,13 @@ export function ReadResultPanel({
               "min-h-11",
               "rounded-md",
               "border",
-              "border-zinc-900",
-              "bg-zinc-900",
+              "border-foreground",
+              "bg-foreground",
               "px-4",
               "py-2",
               "text-sm",
               "font-medium",
-              "text-white",
+              "text-background",
               "disabled:cursor-not-allowed",
               "disabled:opacity-40",
             ])}
@@ -132,13 +132,14 @@ export function ReadResultPanel({
               "min-h-11",
               "rounded-md",
               "border",
-              "border-zinc-300",
-              "bg-white",
+              "border-border",
+              "bg-surface",
               "px-4",
               "py-2",
               "text-sm",
               "font-medium",
               "text-red-700",
+              "dark:text-red-400",
             ])}
             onClick={onReset}
           >
@@ -168,8 +169,8 @@ function RecordCard({ record, index }: RecordCardProps) {
         "space-y-2",
         "rounded-md",
         "border",
-        "border-zinc-200",
-        "bg-zinc-50",
+        "border-border",
+        "bg-surface",
         "p-3",
         "pr-12",
       ])}
@@ -189,9 +190,9 @@ function RecordCard({ record, index }: RecordCardProps) {
           "justify-center",
           "rounded-md",
           "border",
-          "border-zinc-200",
-          "bg-white",
-          "text-zinc-700",
+          "border-border",
+          "bg-background",
+          "text-foreground",
           "disabled:cursor-not-allowed",
           "disabled:opacity-40",
         ])}
@@ -202,11 +203,11 @@ function RecordCard({ record, index }: RecordCardProps) {
         <ClipboardCopy aria-hidden="true" className={clsx(["size-4"])} />
       </button>
       <header className={clsx(["flex", "items-center", "justify-between", "gap-2"])}>
-        <p className={clsx(["text-sm", "font-medium", "text-zinc-900"])}>
+        <p className={clsx(["text-sm", "font-medium", "text-foreground"])}>
           #{index + 1} {getRecordKindLabel(record.kind)}
         </p>
         {record.mediaType ? (
-          <p className={clsx(["text-xs", "text-zinc-500"])}>{record.mediaType}</p>
+          <p className={clsx(["text-xs", "text-muted"])}>{record.mediaType}</p>
         ) : null}
       </header>
       <pre
@@ -217,7 +218,7 @@ function RecordCard({ record, index }: RecordCardProps) {
           "font-mono",
           "text-xs",
           "leading-5",
-          "text-zinc-800",
+          "text-foreground",
         ])}
       >
         {payload || "(空)"}
@@ -240,12 +241,12 @@ function StatusText({ children }: StatusTextProps) {
         "rounded-md",
         "border",
         "border-dashed",
-        "border-zinc-300",
+        "border-border",
         "px-3",
         "py-6",
         "text-center",
         "text-sm",
-        "text-zinc-500",
+        "text-muted",
       ])}
     >
       {children}

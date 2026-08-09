@@ -78,10 +78,10 @@ function ConfirmDialogView({ message, onClose }: ConfirmDialogViewProps) {
         "w-[min(100%,24rem)]",
         "rounded-lg",
         "border",
-        "border-zinc-200",
-        "bg-white",
+        "border-border",
+        "bg-surface",
         "p-0",
-        "text-zinc-900",
+        "text-foreground",
         "shadow-lg",
         "backdrop:bg-zinc-900/40",
       ])}
@@ -92,7 +92,7 @@ function ConfirmDialogView({ message, onClose }: ConfirmDialogViewProps) {
       }}
     >
       <div className={clsx(["space-y-5", "p-5"])}>
-        <p id={messageId} className={clsx(["text-sm", "leading-6", "text-zinc-800"])}>
+        <p id={messageId} className={clsx(["text-sm", "leading-6", "text-foreground"])}>
           {message}
         </p>
         <div className={clsx(["flex", "justify-end", "gap-2"])}>
@@ -103,13 +103,13 @@ function ConfirmDialogView({ message, onClose }: ConfirmDialogViewProps) {
               "min-h-11",
               "rounded-md",
               "border",
-              "border-zinc-300",
-              "bg-white",
+              "border-border",
+              "bg-background",
               "px-4",
               "py-2",
               "text-sm",
               "font-medium",
-              "text-zinc-700",
+              "text-foreground",
             ])}
             onClick={() => onClose(false)}
           >

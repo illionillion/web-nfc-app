@@ -65,12 +65,12 @@ export function WriteDraftPanel({
               "min-h-11",
               "rounded-md",
               "border",
-              "border-zinc-300",
-              "bg-white",
+              "border-border",
+              "bg-surface",
               "px-3",
               "text-sm",
               "font-medium",
-              "text-zinc-900",
+              "text-foreground",
             ])}
             onClick={() => {
               setEditor({ mode: "create", record: createDraftRecord(kind) });
@@ -86,12 +86,13 @@ export function WriteDraftPanel({
             "min-h-11",
             "rounded-md",
             "border",
-            "border-zinc-300",
-            "bg-white",
+            "border-border",
+            "bg-surface",
             "px-3",
             "text-sm",
             "font-medium",
             "text-red-700",
+            "dark:text-red-400",
             "disabled:cursor-not-allowed",
             "disabled:opacity-40",
           ])}
@@ -107,12 +108,12 @@ export function WriteDraftPanel({
             "rounded-md",
             "border",
             "border-dashed",
-            "border-zinc-300",
+            "border-border",
             "px-3",
             "py-6",
             "text-center",
             "text-sm",
-            "text-zinc-500",
+            "text-muted",
           ])}
         >
           下書きはまだありません。レコードを追加してください。
@@ -128,18 +129,20 @@ export function WriteDraftPanel({
                     "space-y-2",
                     "rounded-md",
                     "border",
-                    "border-zinc-200",
-                    "bg-zinc-50",
+                    "border-border",
+                    "bg-surface",
                     "p-3",
                   ])}
                 >
                   <header className={clsx(["flex", "items-start", "justify-between", "gap-2"])}>
                     <div className={clsx(["space-y-1"])}>
-                      <p className={clsx(["text-sm", "font-medium", "text-zinc-900"])}>
+                      <p className={clsx(["text-sm", "font-medium", "text-foreground"])}>
                         #{index + 1} {getWriteRecordKindLabel(record.kind)}
                       </p>
                       {issue ? (
-                        <p className={clsx(["text-xs", "text-red-700"])}>{issue.message}</p>
+                        <p className={clsx(["text-xs", "text-red-700", "dark:text-red-400"])}>
+                          {issue.message}
+                        </p>
                       ) : null}
                     </div>
                     <div className={clsx(["flex", "gap-2"])}>
@@ -148,8 +151,8 @@ export function WriteDraftPanel({
                         className={clsx([
                           "rounded-md",
                           "border",
-                          "border-zinc-300",
-                          "bg-white",
+                          "border-border",
+                          "bg-background",
                           "px-3",
                           "py-1.5",
                           "text-xs",
@@ -164,13 +167,14 @@ export function WriteDraftPanel({
                         className={clsx([
                           "rounded-md",
                           "border",
-                          "border-zinc-300",
-                          "bg-white",
+                          "border-border",
+                          "bg-background",
                           "px-3",
                           "py-1.5",
                           "text-xs",
                           "font-medium",
                           "text-red-700",
+                          "dark:text-red-400",
                         ])}
                         onClick={() => onRemove(record.id)}
                       >
@@ -186,7 +190,7 @@ export function WriteDraftPanel({
                       "font-mono",
                       "text-xs",
                       "leading-5",
-                      "text-zinc-800",
+                      "text-foreground",
                     ])}
                   >
                     {record.value.trim() || "(空)"}
@@ -228,21 +232,25 @@ type WriteStatusProps = {
 function WriteStatus({ phase, errorMessage, draftIssueMessage }: WriteStatusProps) {
   if (phase === "writing") {
     return (
-      <p className={clsx(["text-sm", "text-zinc-600"])}>書き込み中です。タグをかざしてください。</p>
+      <p className={clsx(["text-sm", "text-muted"])}>書き込み中です。タグをかざしてください。</p>
     );
   }
 
   if (phase === "success") {
-    return <p className={clsx(["text-sm", "text-emerald-700"])}>書き込みが完了しました。</p>;
+    return (
+      <p className={clsx(["text-sm", "text-emerald-700", "dark:text-emerald-400"])}>
+        書き込みが完了しました。
+      </p>
+    );
   }
 
   if (phase === "cancelled") {
-    return <p className={clsx(["text-sm", "text-zinc-600"])}>書き込みをキャンセルしました。</p>;
+    return <p className={clsx(["text-sm", "text-muted"])}>書き込みをキャンセルしました。</p>;
   }
 
   if (phase === "error") {
     return (
-      <p className={clsx(["text-sm", "text-red-700"])} role="alert">
+      <p className={clsx(["text-sm", "text-red-700", "dark:text-red-400"])} role="alert">
         {errorMessage ?? "書き込みに失敗しました。"}
       </p>
     );
@@ -250,7 +258,7 @@ function WriteStatus({ phase, errorMessage, draftIssueMessage }: WriteStatusProp
 
   if (draftIssueMessage) {
     return (
-      <p className={clsx(["text-sm", "text-amber-700"])} role="status">
+      <p className={clsx(["text-sm", "text-amber-700", "dark:text-amber-400"])} role="status">
         書き込みできません: {draftIssueMessage}
       </p>
     );

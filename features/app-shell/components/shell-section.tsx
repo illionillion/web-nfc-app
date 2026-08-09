@@ -16,11 +16,11 @@ export function ShellSection({ title, description, children, ref }: ShellSection
   return (
     <section
       ref={ref}
-      className={clsx(["scroll-mt-32", "space-y-3", "border-t", "border-zinc-200", "pt-6"])}
+      className={clsx(["scroll-mt-32", "space-y-3", "border-t", "border-border", "pt-6"])}
     >
       <header className={clsx(["space-y-1"])}>
         <h2 className={clsx(["text-base", "font-semibold", "tracking-tight"])}>{title}</h2>
-        {description ? <p className={clsx(["text-sm", "text-zinc-600"])}>{description}</p> : null}
+        {description ? <p className={clsx(["text-sm", "text-muted"])}>{description}</p> : null}
       </header>
       {children}
     </section>
