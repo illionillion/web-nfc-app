@@ -10,6 +10,15 @@ describe("BrandMark", () => {
     expect(screen.getByRole("img", { name: "Web NFC" })).toBeInTheDocument();
   });
 
+  it("favicon と同じ inset の枠を描く", () => {
+    const { container } = render(<BrandMark decorative />);
+    const rects = container.querySelectorAll("[data-brand-mark] rect");
+
+    expect(rects).toHaveLength(2);
+    expect(rects[1]).toHaveAttribute("x", "0.75");
+    expect(rects[1]).toHaveAttribute("width", "30.5");
+  });
+
   it("decorative のときはアクセシブルツリーから外す", () => {
     const { container } = render(<BrandMark decorative />);
 

@@ -17,11 +17,14 @@ export function BrandMark({ decorative = false, className }: BrandMarkProps) {
       data-brand-mark=""
       {...(decorative ? { "aria-hidden": true } : { role: "img", "aria-label": "Web NFC" })}
     >
+      <rect width="32" height="32" rx="8" fill="var(--mark-tile)" />
       <rect
-        width="32"
-        height="32"
-        rx="8"
-        fill="var(--mark-tile)"
+        x="0.75"
+        y="0.75"
+        width="30.5"
+        height="30.5"
+        rx="7.25"
+        fill="none"
         stroke="var(--mark-tile-stroke)"
         strokeWidth="1.5"
       />
