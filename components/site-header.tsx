@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { clsx } from "clsx";
 
+import { BrandMark } from "@/components/brand-mark";
 import { ThemeMenu } from "@/features/settings/components/theme-menu";
 import type { ThemePreference } from "@/features/settings/types";
 
@@ -32,8 +33,17 @@ export function SiteHeader({ theme }: SiteHeaderProps) {
       >
         <Link
           href="/"
-          className={clsx(["text-sm", "font-semibold", "tracking-tight", "text-foreground"])}
+          className={clsx([
+            "inline-flex",
+            "items-center",
+            "gap-2",
+            "text-sm",
+            "font-semibold",
+            "tracking-tight",
+            "text-foreground",
+          ])}
         >
+          <BrandMark decorative className={clsx(["size-7"])} />
           Web NFC
         </Link>
         <div className={clsx(["flex", "items-center", "gap-2"])}>

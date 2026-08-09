@@ -1,6 +1,8 @@
 import Link from "next/link";
 import { clsx } from "clsx";
 
+import { BrandMark } from "@/components/brand-mark";
+
 const HOW_TO_STEPS = [
   {
     title: "読む",
@@ -34,19 +36,28 @@ export function HomeLanding() {
         "py-12",
       ])}
     >
-      <div className={clsx(["space-y-3"])}>
-        <p
-          className={clsx(["text-xs", "font-medium", "uppercase", "tracking-wider", "text-muted"])}
-        >
-          Web NFC
-        </p>
-        <h1 className={clsx(["text-3xl", "font-semibold", "tracking-tight"])}>
-          ブラウザだけで NFC を読み書き
-        </h1>
-        <p className={clsx(["text-base", "leading-7", "text-muted"])}>
-          NDEF タグの読取・書込・消去を端末内で完結するツールです。Android Chrome と HTTPS（または
-          localhost）が必要です。
-        </p>
+      <div className={clsx(["space-y-6"])}>
+        <BrandMark decorative className={clsx(["mx-auto", "block", "size-20"])} />
+        <div className={clsx(["space-y-3"])}>
+          <p
+            className={clsx([
+              "text-xs",
+              "font-medium",
+              "uppercase",
+              "tracking-wider",
+              "text-muted",
+            ])}
+          >
+            Web NFC
+          </p>
+          <h1 className={clsx(["text-3xl", "font-semibold", "tracking-tight"])}>
+            ブラウザだけで NFC を読み書き
+          </h1>
+          <p className={clsx(["text-base", "leading-7", "text-muted"])}>
+            NDEF タグの読取・書込・消去を端末内で完結するツールです。Android Chrome と HTTPS（または
+            localhost）が必要です。
+          </p>
+        </div>
       </div>
 
       <div className={clsx(["flex", "flex-col", "gap-3"])}>
