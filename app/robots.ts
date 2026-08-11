@@ -1,9 +1,10 @@
 import type { MetadataRoute } from "next";
 
-import { SITE_ORIGIN, siteUrl } from "@/lib/site";
+import { siteUrl } from "@/lib/site";
 
 /**
  * クローラ向け robots。sitemap は同オリジンの /sitemap.xml。
+ * `Host` は出さない（プロトコル付きオリジンを誤って載せないため。sitemap で十分）。
  */
 export default function robots(): MetadataRoute.Robots {
   return {
@@ -12,6 +13,5 @@ export default function robots(): MetadataRoute.Robots {
       allow: "/",
     },
     sitemap: siteUrl("/sitemap.xml"),
-    host: SITE_ORIGIN,
   };
 }
