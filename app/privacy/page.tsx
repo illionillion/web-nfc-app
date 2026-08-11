@@ -6,6 +6,9 @@ export const metadata: Metadata = {
   title: "プライバシーポリシー",
   description:
     "Web NFC ツールのプライバシー方針。端末内完結、Cookie と localStorage の役割分担を記載します。",
+  alternates: {
+    canonical: "/privacy",
+  },
 };
 
 /**
