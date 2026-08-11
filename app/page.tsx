@@ -8,6 +8,9 @@ export const metadata: Metadata = {
   },
   description:
     "NDEF タグの読取・書込・消去を Android Chrome のブラウザだけで行うツール。データは端末内で完結します。",
+  alternates: {
+    canonical: "/",
+  },
 };
 
 /**

@@ -5,6 +5,9 @@ import { LegalArticle, LegalSection } from "@/components/legal-article";
 export const metadata: Metadata = {
   title: "利用規約",
   description: "Web NFC ツールの利用条件。対応環境・役割分担・免責を記載します。",
+  alternates: {
+    canonical: "/terms",
+  },
 };
 
 /**

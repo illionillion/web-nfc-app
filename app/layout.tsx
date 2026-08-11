@@ -12,6 +12,7 @@ import {
   shouldUseDarkClass,
 } from "@/features/settings/lib/apply-theme";
 import { parseThemePreference, THEME_COOKIE_NAME } from "@/features/settings/lib/theme-cookie";
+import { SITE_ORIGIN } from "@/lib/site";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -24,12 +25,16 @@ const geistMono = Geist_Mono({
   subsets: ["latin"],
 });
 
+const googleSiteVerification = process.env.GOOGLE_SITE_VERIFICATION?.trim();
+
 export const metadata: Metadata = {
+  metadataBase: new URL(SITE_ORIGIN),
   title: {
     default: "Web NFC",
     template: "%s | Web NFC",
   },
   description: "ブラウザだけで NFC タグ（NDEF）を読み書きするツール",
+  ...(googleSiteVerification ? { verification: { google: googleSiteVerification } } : {}),
 };
 
 export default async function RootLayout({
