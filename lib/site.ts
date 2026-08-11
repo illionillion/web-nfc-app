@@ -1,6 +1,9 @@
 /** 本番オリジン（Cloudflare Workers）。独自ドメインは当面使わない。 */
 export const SITE_ORIGIN = "https://web-nfc-app.illionillion.workers.dev";
 
+/** ソース・スター用の GitHub リポジトリ */
+export const GITHUB_REPO_URL = "https://github.com/illionillion/web-nfc-app";
+
 /**
  * Search Console 等で使う絶対 URL を組み立てる。
  *

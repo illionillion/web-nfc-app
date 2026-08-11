@@ -1,7 +1,9 @@
 import Link from "next/link";
 import { clsx } from "clsx";
+import { Star } from "lucide-react";
 
 import { BrandMark } from "@/components/brand-mark";
+import { GITHUB_REPO_URL } from "@/lib/site";
 
 const HOW_TO_STEPS = [
   {
@@ -78,6 +80,39 @@ export function HomeLanding() {
         >
           ツールを開く
         </Link>
+        <a
+          href={GITHUB_REPO_URL}
+          target="_blank"
+          rel="noopener noreferrer"
+          className={clsx([
+            "group",
+            "inline-flex",
+            "min-h-11",
+            "items-center",
+            "justify-center",
+            "gap-2",
+            "rounded-md",
+            "border",
+            "border-border",
+            "px-5",
+            "text-sm",
+            "font-medium",
+            "text-muted",
+            "hover:border-foreground/20",
+            "hover:text-foreground",
+          ])}
+        >
+          <Star
+            aria-hidden
+            className={clsx([
+              "size-4",
+              "transition-colors",
+              "group-hover:fill-amber-400",
+              "group-hover:text-amber-400",
+            ])}
+          />
+          GitHub で Star
+        </a>
         <p className={clsx(["text-sm", "text-muted"])}>iOS や多くの PC ブラウザでは使えません。</p>
       </div>
 
