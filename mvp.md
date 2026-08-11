@@ -78,7 +78,7 @@
 
 - [x] favicon・ヒーロー・OGP 用画像（#25）
 - [x] Search Console 検証とメタタグ（#26）
-- [ ] OGP / Twitter Card（#27）
+- [x] OGP / Twitter Card（#27）
 - [ ] PWA（#31）
 - [ ] NFC かざしアニメーション（#28）
 - [ ] i18n（#24）

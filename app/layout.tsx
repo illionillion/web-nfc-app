@@ -12,7 +12,7 @@ import {
   shouldUseDarkClass,
 } from "@/features/settings/lib/apply-theme";
 import { parseThemePreference, THEME_COOKIE_NAME } from "@/features/settings/lib/theme-cookie";
-import { SITE_ORIGIN } from "@/lib/site";
+import { SITE_ORIGIN, OG_IMAGE } from "@/lib/site";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -25,16 +25,38 @@ const geistMono = Geist_Mono({
   subsets: ["latin"],
 });
 
+const defaultDescription = "ブラウザだけで NFC タグ（NDEF）を読み書きするツール";
+
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_ORIGIN),
   title: {
     default: "Web NFC",
     template: "%s | Web NFC",
   },
-  description: "ブラウザだけで NFC タグ（NDEF）を読み書きするツール",
+  description: defaultDescription,
   // HTML に出る所有確認用。秘密情報ではない
   verification: {
     google: "Jb-kdqdlbXyt8O9rI0WOAQ92_gL1YGjN468S2392Rdc",
+  },
+  openGraph: {
+    type: "website",
+    locale: "ja_JP",
+    siteName: "Web NFC",
+    title: "Web NFC",
+    description: defaultDescription,
+    url: "/",
+    images: [OG_IMAGE],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Web NFC",
+    description: defaultDescription,
+    images: [
+      {
+        url: OG_IMAGE.url,
+        alt: OG_IMAGE.alt,
+      },
+    ],
   },
 };
 
