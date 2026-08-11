@@ -24,6 +24,7 @@ describe("HomeLanding", () => {
 
     expect(star).toHaveAttribute("href", GITHUB_REPO_URL);
     expect(star).toHaveAttribute("target", "_blank");
+    expect(star).toHaveAttribute("rel", "noopener noreferrer");
   });
 
   it("使い方に読取・書込・消去の説明がある", () => {

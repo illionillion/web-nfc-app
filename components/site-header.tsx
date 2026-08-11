@@ -12,7 +12,7 @@ type SiteHeaderProps = {
 };
 
 /**
- * GitHub のマーク（lucide は商標理由で Github アイコンを削除済み）。
+ * GitHub のマーク（lucide は商標理由で GitHub アイコンを削除済み）。
  */
 function GitHubMark({ className }: { className?: string }) {
   return (
