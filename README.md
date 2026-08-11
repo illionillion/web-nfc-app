@@ -29,14 +29,12 @@ pnpm cf:deploy
 
 1. [Google Search Console](https://search.google.com/search-console) で URL プレフィックスプロパティを追加  
    `https://web-nfc-app.illionillion.workers.dev`
-2. 所有権確認は **HTML タグ** を選ぶ
-3. 表示された `content` の値を、Cloudflare Workers の環境変数  
-   `GOOGLE_SITE_VERIFICATION` に設定して再デプロイする  
-   （ローカルなら `.dev.vars` に `GOOGLE_SITE_VERIFICATION=...`）
-4. 確認後、サイトマップとして  
+2. 所有権確認は **HTML タグ**（`google-site-verification` は `app/layout.tsx` に済み）
+3. 本番デプロイ後に Search Console で「確認」を押す
+4. サイトマップ  
    `https://web-nfc-app.illionillion.workers.dev/sitemap.xml` を登録する
 
-確認コードは HTML に出るため秘密情報ではない。リポジトリには直書きしない。
+確認コードは HTML に出るため秘密情報ではない。
 
 ## 技術
 

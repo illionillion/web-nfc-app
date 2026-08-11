@@ -25,8 +25,6 @@ const geistMono = Geist_Mono({
   subsets: ["latin"],
 });
 
-const googleSiteVerification = process.env.GOOGLE_SITE_VERIFICATION?.trim();
-
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_ORIGIN),
   title: {
@@ -34,7 +32,10 @@ export const metadata: Metadata = {
     template: "%s | Web NFC",
   },
   description: "ブラウザだけで NFC タグ（NDEF）を読み書きするツール",
-  ...(googleSiteVerification ? { verification: { google: googleSiteVerification } } : {}),
+  // HTML に出る所有確認用。秘密情報ではない
+  verification: {
+    google: "Jb-kdqdlbXyt8O9rI0WOAQ92_gL1YGjN468S2392Rdc",
+  },
 };
 
 export default async function RootLayout({
