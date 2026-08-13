@@ -1,6 +1,9 @@
 /** 本番オリジン（Cloudflare Workers）。独自ドメインは当面使わない。 */
 export const SITE_ORIGIN = "https://web-nfc-app.illionillion.workers.dev";
 
+/** ソース・スター用の GitHub リポジトリ */
+export const GITHUB_REPO_URL = "https://github.com/illionillion/web-nfc-app";
+
 /** OGP / Twitter Card 用画像（`public/og.png`）。metadataBase と合わせて絶対 URL になる。 */
 export const OG_IMAGE = {
   url: "/og.png",

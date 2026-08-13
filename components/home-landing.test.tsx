@@ -2,6 +2,7 @@ import { render, screen, within } from "@testing-library/react";
 import { describe, expect, it } from "vitest";
 
 import { HomeLanding } from "@/components/home-landing";
+import { GITHUB_REPO_URL } from "@/lib/site";
 
 describe("HomeLanding", () => {
   it("favicon と同じマークを中央に出す", () => {
@@ -14,6 +15,16 @@ describe("HomeLanding", () => {
     render(<HomeLanding />);
 
     expect(screen.getByRole("link", { name: "ツールを開く" })).toHaveAttribute("href", "/app");
+  });
+
+  it("GitHub で Star する導線がある", () => {
+    render(<HomeLanding />);
+
+    const star = screen.getByRole("link", { name: "GitHub で Star" });
+
+    expect(star).toHaveAttribute("href", GITHUB_REPO_URL);
+    expect(star).toHaveAttribute("target", "_blank");
+    expect(star).toHaveAttribute("rel", "noopener noreferrer");
   });
 
   it("使い方に読取・書込・消去の説明がある", () => {
