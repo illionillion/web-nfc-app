@@ -1,6 +1,52 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 630" width="1200" height="630">
-  <rect width="1200" height="630" fill="#ffffff" />
-  <g transform="translate(460 175) scale(8.75)">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#ffffff" />
+      <stop offset="55%" stop-color="#f7f8fa" />
+      <stop offset="100%" stop-color="#eef1f5" />
+    </linearGradient>
+    <radialGradient id="glow" cx="78%" cy="48%" r="42%">
+      <stop offset="0%" stop-color="#5c6d8a" stop-opacity="0.14" />
+      <stop offset="100%" stop-color="#5c6d8a" stop-opacity="0" />
+    </radialGradient>
+  </defs>
+
+  <rect width="1200" height="630" fill="url(#bg)" />
+  <rect width="1200" height="630" fill="url(#glow)" />
+
+  <!-- 右下の薄い弧（NFC の気配） -->
+  <g
+    fill="none"
+    stroke="#5c6d8a"
+    stroke-opacity="0.12"
+    stroke-width="18"
+    stroke-linecap="round"
+  >
+    <path d="M820 560c90-70 150-170 150-280" />
+    <path d="M880 580c110-85 185-205 185-340" />
+  </g>
+
+  <!-- 左テキスト -->
+  <g
+    font-family="ui-sans-serif, system-ui, -apple-system, 'Hiragino Sans', 'Hiragino Kaku Gothic ProN', 'Helvetica Neue', sans-serif"
+  >
+    <text
+      x="96"
+      y="278"
+      fill="#171717"
+      font-size="92"
+      font-weight="700"
+      letter-spacing="-1.5"
+    >
+      Web NFC
+    </text>
+    <text x="98" y="348" fill="#71717a" font-size="34" font-weight="500">
+      ブラウザだけで NFC タグを読み書き
+    </text>
+  </g>
+
+  <!-- 右: BrandMark（favicon と同じパス） -->
+  <g transform="translate(780 175) scale(11)">
     <rect width="32" height="32" rx="8" fill="#f4f4f5" />
     <rect
       x="0.75"
