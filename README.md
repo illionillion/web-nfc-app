@@ -36,6 +36,13 @@ pnpm cf:deploy
 
 確認コードは HTML に出るため秘密情報ではない。
 
+## シェアプレビュー
+
+OGP / Twitter Card は `public/og.png`（1200×630）を使う。デプロイ後の確認例:
+
+- [Facebook Sharing Debugger](https://developers.facebook.com/tools/debug/)
+- [X Card Validator](https://cards-dev.twitter.com/validator)（利用可能な場合）
+
 ## 技術
 
 - Next.js（App Router）/ Cloudflare Workers
