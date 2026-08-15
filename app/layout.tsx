@@ -1,10 +1,11 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import { cookies } from "next/headers";
 import { clsx } from "clsx";
 
 import { AppToaster } from "@/components/app-toaster";
 import { ConfirmProvider } from "@/components/confirm-provider";
+import { PwaRegister } from "@/components/pwa-register";
 import { SiteFooter } from "@/components/site-footer";
 import { SiteHeader } from "@/components/site-header";
 import {
@@ -29,6 +30,7 @@ const defaultDescription = "ブラウザだけで NFC タグ（NDEF）を読み�
 
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_ORIGIN),
+  applicationName: "Web NFC",
   title: {
     default: "Web NFC",
     template: "%s | Web NFC",
@@ -37,6 +39,11 @@ export const metadata: Metadata = {
   // HTML に出る所有確認用。秘密情報ではない
   verification: {
     google: "Jb-kdqdlbXyt8O9rI0WOAQ92_gL1YGjN468S2392Rdc",
+  },
+  appleWebApp: {
+    capable: true,
+    title: "Web NFC",
+    statusBarStyle: "default",
   },
   openGraph: {
     type: "website",
@@ -58,6 +65,10 @@ export const metadata: Metadata = {
       },
     ],
   },
+};
+
+export const viewport: Viewport = {
+  themeColor: "#ffffff",
 };
 
 export default async function RootLayout({
@@ -92,6 +103,7 @@ export default async function RootLayout({
           {children}
           <SiteFooter />
           <AppToaster theme={isDark ? "dark" : "light"} />
+          <PwaRegister />
         </ConfirmProvider>
       </body>
     </html>

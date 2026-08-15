@@ -43,6 +43,11 @@ OGP / Twitter Card は `public/og.png`（1200×630）を使う。デプロイ後
 - [Facebook Sharing Debugger](https://developers.facebook.com/tools/debug/)
 - [X Card Validator](https://cards-dev.twitter.com/validator)（利用可能な場合）
 
+## PWA
+
+Android Chrome でホーム画面に追加できる。Manifest は `/manifest.webmanifest`、シェル用 SW は `/sw.js`。
+`start_url` は `/app`。アイコンはブランドマーク由来（`public/icons/`）。
+
 ## 技術
 
 - Next.js（App Router）/ Cloudflare Workers
