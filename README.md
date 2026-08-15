@@ -48,8 +48,9 @@ OGP / Twitter Card は `public/og.png`（1200×630）を使う。デプロイ後
 Android Chrome でホーム画面に追加できる。Manifest は `/manifest.webmanifest`、シェル用 SW は `/sw.js`。
 `start_url` は `/app`。アイコンはブランドマーク由来（`public/icons/`）。
 
-SW は `/app` シェルを install 時にキャッシュし、JS/CSS（`/_next/static`）は一度オンラインで読み込んだ後にキャッシュする。
-そのため**初回は必ずオンラインで `/app` を開く**こと。以降はオフラインでも UI が起動する。
+SW は install 時に `/app` の HTML と、それが参照する `/_next/static` の JS/CSS をまとめてキャッシュする。
+そのため**初回はオンラインで開く**必要があるが、以降はオフラインでも UI が起動する。
+新しいデプロイ後も同じ手順で新旧のシェルが混ざらないように更新される。
 
 ## 技術
 

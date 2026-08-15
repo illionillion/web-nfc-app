@@ -6,19 +6,18 @@
 const CACHE_PREFIX = "web-nfc-shell-";
 const CACHE = `${CACHE_PREFIX}v1`;
 
-/** install 失敗を防ぐため必須と任意を分ける。`/app` はツール本体。 */
-const REQUIRED_PRECACHE = ["/app"];
-const OPTIONAL_PRECACHE = ["/"];
+/** オフラインで必ず開けるようにするツール本体。 */
+const APP_SHELL = "/app";
+/** 取得できなくても install を失敗させないシェル。 */
+const OPTIONAL_SHELLS = ["/"];
 
 self.addEventListener("install", (event) => {
   event.waitUntil(
     caches
       .open(CACHE)
       .then(async (cache) => {
-        // 必須シェルは失敗したら install も失敗させる（オフライン時に確実に開くため）
-        await cache.addAll(REQUIRED_PRECACHE);
-        // 任意シェルは 1 件ずつ。瞬断・5xx で install 全体を落とさない
-        await Promise.allSettled(OPTIONAL_PRECACHE.map((url) => cache.add(url)));
+        await precacheShell(cache, APP_SHELL);
+        await Promise.allSettled(OPTIONAL_SHELLS.map((url) => precacheShell(cache, url)));
       })
       .then(() => self.skipWaiting())
   );
@@ -48,33 +47,68 @@ self.addEventListener("fetch", (event) => {
   if (url.origin !== self.location.origin) return;
 
   if (request.mode === "navigate") {
-    event.respondWith(networkFirst(request));
+    event.respondWith(networkFirst(event));
     return;
   }
 
   if (url.pathname.startsWith("/_next/static/")) {
-    event.respondWith(cacheFirst(request));
+    event.respondWith(cacheFirst(event));
   }
 });
 
 /**
+ * シェル HTML とそれが参照する `/_next/static` を揃えてキャッシュする。
+ *
+ * ハッシュ付きアセットを先に入れてから HTML を置くことで、SW 更新直後に
+ * 「新しい HTML はあるが対応する JS/CSS が無い」状態を作らない。
+ *
+ * @param {Cache} cache
+ * @param {string} url シェルのパス
+ * @returns {Promise<void>}
+ */
+async function precacheShell(cache, url) {
+  const response = await fetch(url, { cache: "reload" });
+  if (!response.ok) {
+    throw new Error(`precache failed: ${url} (${response.status})`);
+  }
+
+  const html = await response.clone().text();
+  await Promise.allSettled(extractStaticAssets(html).map((asset) => cache.add(asset)));
+  await cache.put(url, response);
+}
+
+/**
+ * HTML から同一 origin の `/_next/static` 参照を集める。
+ *
+ * @param {string} html
+ * @returns {string[]} 重複を除いたパス一覧
+ */
+function extractStaticAssets(html) {
+  const matches = html.match(/\/_next\/static\/[^"'\\\s>)]+/g) ?? [];
+  return [...new Set(matches)];
+}
+
+/**
  * ネット優先。失敗時はキャッシュ、さらに `/app` へフォールバック。
  *
- * @param {Request} request
+ * @param {FetchEvent} event
  * @returns {Promise<Response>}
  */
-async function networkFirst(request) {
+async function networkFirst(event) {
+  const request = event.request;
   const cache = await caches.open(CACHE);
+
   try {
     const response = await fetch(request);
     if (response.ok) {
-      cache.put(request, response.clone());
+      // レスポンス返却で SW が停止しても書き込みが中断しないよう待たせる
+      event.waitUntil(cache.put(request, response.clone()));
     }
     return response;
   } catch {
     const cached = await cache.match(request);
     if (cached) return cached;
-    const appShell = await cache.match("/app");
+    const appShell = await cache.match(APP_SHELL);
     if (appShell) return appShell;
     return Response.error();
   }
@@ -83,17 +117,19 @@ async function networkFirst(request) {
 /**
  * キャッシュ優先（ビルドハッシュ付き静的アセット向け）。
  *
- * @param {Request} request
+ * @param {FetchEvent} event
  * @returns {Promise<Response>}
  */
-async function cacheFirst(request) {
-  const cached = await caches.match(request);
+async function cacheFirst(event) {
+  const request = event.request;
+  const cache = await caches.open(CACHE);
+
+  const cached = await cache.match(request);
   if (cached) return cached;
 
-  const cache = await caches.open(CACHE);
   const response = await fetch(request);
   if (response.ok) {
-    cache.put(request, response.clone());
+    event.waitUntil(cache.put(request, response.clone()));
   }
   return response;
 }
