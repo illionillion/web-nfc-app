@@ -3,14 +3,23 @@
  * 文書は network-first（オフライン時はキャッシュ）、`/_next/static` は cache-first。
  * NFC データは localStorage のままサーバーへ送らない。
  */
-const CACHE = "web-nfc-shell-v1";
-const PRECACHE = ["/", "/app"];
+const CACHE_PREFIX = "web-nfc-shell-";
+const CACHE = `${CACHE_PREFIX}v1`;
+
+/** install 失敗を防ぐため必須と任意を分ける。`/app` はツール本体。 */
+const REQUIRED_PRECACHE = ["/app"];
+const OPTIONAL_PRECACHE = ["/"];
 
 self.addEventListener("install", (event) => {
   event.waitUntil(
     caches
       .open(CACHE)
-      .then((cache) => cache.addAll(PRECACHE))
+      .then(async (cache) => {
+        // 必須シェルは失敗したら install も失敗させる（オフライン時に確実に開くため）
+        await cache.addAll(REQUIRED_PRECACHE);
+        // 任意シェルは 1 件ずつ。瞬断・5xx で install 全体を落とさない
+        await Promise.allSettled(OPTIONAL_PRECACHE.map((url) => cache.add(url)));
+      })
       .then(() => self.skipWaiting())
   );
 });
@@ -20,7 +29,12 @@ self.addEventListener("activate", (event) => {
     caches
       .keys()
       .then((keys) =>
-        Promise.all(keys.filter((key) => key !== CACHE).map((key) => caches.delete(key)))
+        Promise.all(
+          keys
+            // この SW が管理する古い世代のみ削除。他用途の CacheStorage は残す
+            .filter((key) => key.startsWith(CACHE_PREFIX) && key !== CACHE)
+            .map((key) => caches.delete(key))
+        )
       )
       .then(() => self.clients.claim())
   );
