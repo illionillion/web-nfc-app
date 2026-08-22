@@ -5,8 +5,8 @@ type BrandMarkHeroProps = {
 };
 
 /**
- * トップヒーロー専用のマーク。BrandMark / favicon と同じパスだが、弧だけを
- * 遅延表示するループアニメ用の別 SVG（ヘッダーの BrandMark は触らない）。
+ * トップヒーロー専用のマーク。N のパスは BrandMark / favicon と同じだが、
+ * 弧はアニメ用に3本（内側→外側）へ増やした別 SVG。ヘッダーの BrandMark は触らない。
  *
  * `prefers-reduced-motion: reduce` では弧を常時表示し、アニメは止める。
  */
@@ -33,10 +33,14 @@ export function BrandMarkHero({ className }: BrandMarkHeroProps) {
       <g fill="none" stroke="var(--mark-arc)" strokeWidth="2.4" strokeLinecap="round">
         <path
           className="brand-mark-hero__arc brand-mark-hero__arc--1"
-          d="M22.2 10.8a7.2 7.2 0 0 1 0 10.4"
+          d="M20.6 12.2a5.2 5.2 0 0 1 0 7.6"
         />
         <path
           className="brand-mark-hero__arc brand-mark-hero__arc--2"
+          d="M22.2 10.8a7.2 7.2 0 0 1 0 10.4"
+        />
+        <path
+          className="brand-mark-hero__arc brand-mark-hero__arc--3"
           d="M25.4 7.8a11.6 11.6 0 0 1 0 16.4"
         />
       </g>
