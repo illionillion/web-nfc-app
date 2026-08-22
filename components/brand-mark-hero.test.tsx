@@ -10,7 +10,10 @@ describe("BrandMarkHero", () => {
 
     expect(root).toBeInTheDocument();
     expect(root).toHaveAttribute("aria-hidden", "true");
-    expect(container.querySelectorAll(".brand-mark-hero__arc")).toHaveLength(3);
+    expect(container.querySelectorAll(".bmh-arc")).toHaveLength(3);
+    expect(container.querySelector(".bmh-arc1")).toBeInTheDocument();
+    expect(container.querySelector(".bmh-arc2")).toBeInTheDocument();
+    expect(container.querySelector(".bmh-arc3")).toBeInTheDocument();
   });
 
   it("N のパスは BrandMark と同じで、弧は3本を均等間隔にする", () => {
