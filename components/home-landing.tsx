@@ -2,7 +2,7 @@ import Link from "next/link";
 import { clsx } from "clsx";
 import { Star } from "lucide-react";
 
-import { BrandMark } from "@/components/brand-mark";
+import { BrandMarkHero } from "@/components/brand-mark-hero";
 import { GITHUB_REPO_URL } from "@/lib/site";
 
 const HOW_TO_STEPS = [
@@ -39,7 +39,7 @@ export function HomeLanding() {
       ])}
     >
       <div className={clsx(["space-y-6"])}>
-        <BrandMark decorative className={clsx(["mx-auto", "block", "size-20"])} />
+        <BrandMarkHero className={clsx(["mx-auto", "block", "size-20"])} />
         <div className={clsx(["space-y-3"])}>
           <p
             className={clsx([

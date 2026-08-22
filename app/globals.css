@@ -40,3 +40,39 @@ body {
   color: var(--foreground);
   font-family: var(--font-sans), system-ui, sans-serif;
 }
+
+/* トップヒーロー: 弧を内側→外側へ遅れて出すループ（約 2.8s） */
+@keyframes brand-mark-hero-arc {
+  0%,
+  8% {
+    opacity: 0;
+  }
+  18%,
+  58% {
+    opacity: 1;
+  }
+  72%,
+  100% {
+    opacity: 0;
+  }
+}
+
+.brand-mark-hero__arc {
+  opacity: 0;
+  animation: brand-mark-hero-arc 2.8s ease-in-out infinite;
+}
+
+.brand-mark-hero__arc--1 {
+  animation-delay: 0s;
+}
+
+.brand-mark-hero__arc--2 {
+  animation-delay: 0.4s;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .brand-mark-hero__arc {
+    animation: none;
+    opacity: 1;
+  }
+}
