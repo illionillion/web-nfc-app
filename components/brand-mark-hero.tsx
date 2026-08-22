@@ -33,11 +33,11 @@ export function BrandMarkHero({ className }: BrandMarkHeroProps) {
       <g fill="none" stroke="var(--mark-arc)" strokeWidth="2.4" strokeLinecap="round">
         <path
           className="brand-mark-hero__arc brand-mark-hero__arc--1"
-          d="M20.6 12.2a5.2 5.2 0 0 1 0 7.6"
+          d="M20.8 12.5a5 5 0 0 1 0 7"
         />
         <path
           className="brand-mark-hero__arc brand-mark-hero__arc--2"
-          d="M22.2 10.8a7.2 7.2 0 0 1 0 10.4"
+          d="M23.1 10a8.2 8.2 0 0 1 0 12"
         />
         <path
           className="brand-mark-hero__arc brand-mark-hero__arc--3"
