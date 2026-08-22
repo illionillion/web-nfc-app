@@ -44,8 +44,9 @@ export function BrandMarkHero({ className }: BrandMarkHeroProps) {
 
 /**
  * 1 → 2 の順だけが出るよう、出現開始をキーフレームでずらす（delay 不使用）。
+ * reduced-motion 宣言の回帰テスト用に export する。
  */
-const HERO_ARC_STYLE = `
+export const HERO_ARC_STYLE = `
 @keyframes bmh-arc1 {
   0%, 8% { opacity: 0; }
   12%, 62% { opacity: 1; }
