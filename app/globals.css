@@ -41,17 +41,47 @@ body {
   font-family: var(--font-sans), system-ui, sans-serif;
 }
 
-/* トップヒーロー: 弧を内側→外側へ遅れて出すループ（約 3.2s） */
-@keyframes brand-mark-hero-arc {
+/* トップヒーロー: 弧を左（内側）→右（外側）の順に出すループ（約 3s） */
+@keyframes brand-mark-hero-arc-1 {
   0%,
-  8% {
+  6% {
     opacity: 0;
   }
-  18%,
-  58% {
+  12%,
+  62% {
     opacity: 1;
   }
-  72%,
+  74%,
+  100% {
+    opacity: 0;
+  }
+}
+
+@keyframes brand-mark-hero-arc-2 {
+  0%,
+  22% {
+    opacity: 0;
+  }
+  28%,
+  62% {
+    opacity: 1;
+  }
+  74%,
+  100% {
+    opacity: 0;
+  }
+}
+
+@keyframes brand-mark-hero-arc-3 {
+  0%,
+  38% {
+    opacity: 0;
+  }
+  44%,
+  62% {
+    opacity: 1;
+  }
+  74%,
   100% {
     opacity: 0;
   }
@@ -59,19 +89,18 @@ body {
 
 .brand-mark-hero__arc {
   opacity: 0;
-  animation: brand-mark-hero-arc 3.2s ease-in-out infinite;
 }
 
 .brand-mark-hero__arc--1 {
-  animation-delay: 0s;
+  animation: brand-mark-hero-arc-1 3s ease-in-out infinite;
 }
 
 .brand-mark-hero__arc--2 {
-  animation-delay: 0.35s;
+  animation: brand-mark-hero-arc-2 3s ease-in-out infinite;
 }
 
 .brand-mark-hero__arc--3 {
-  animation-delay: 0.7s;
+  animation: brand-mark-hero-arc-3 3s ease-in-out infinite;
 }
 
 @media (prefers-reduced-motion: reduce) {
