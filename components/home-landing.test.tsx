@@ -5,10 +5,11 @@ import { HomeLanding } from "@/components/home-landing";
 import { GITHUB_REPO_URL } from "@/lib/site";
 
 describe("HomeLanding", () => {
-  it("favicon と同じマークを中央に出す", () => {
+  it("ヒーローに弧アニメ用の別マークを出す", () => {
     const { container } = render(<HomeLanding />);
 
-    expect(container.querySelector("[data-brand-mark]")).toBeInTheDocument();
+    expect(container.querySelector("[data-brand-mark-hero]")).toBeInTheDocument();
+    expect(container.querySelector("[data-brand-mark]")).not.toBeInTheDocument();
   });
 
   it("ツールへの CTA を出す", () => {
