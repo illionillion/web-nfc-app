@@ -22,7 +22,7 @@
     "prepare": "lefthook install"
   },
   "dependencies": {
-    "@opennextjs/cloudflare": "^1.20.2",
+    "@opennextjs/cloudflare": "^1.20.17",
     "@uiw/react-textarea-code-editor": "^3.1.1",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
@@ -53,6 +53,6 @@
     "tailwindcss": "^4",
     "typescript": "^5",
     "vitest": "^4.1.10",
-    "wrangler": "^4.118.0"
+    "wrangler": "^4.161.0"
   }
 }
